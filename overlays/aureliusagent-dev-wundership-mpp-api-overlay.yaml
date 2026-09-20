@@ -1,0 +1,70 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the WunderCorp Wundership MPP API
+  version: 1.0.0
+extends: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+x-source: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (verbatim harvest of https://rpc.aureliusagent.dev/openapi.json, byte-identical to https://mpp.openmodel.sh/openapi.json)
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      catalog: https://apis.io/aureliusagent-dev
+      provider: WunderCorp
+      maintainer: Kin Lane <kin@apievangelist.com>
+      harvested_from:
+      - https://rpc.aureliusagent.dev/openapi.json
+      - https://mpp.openmodel.sh/openapi.json
+      - https://api.wundership.com/api/openapi-agent.json
+      - https://api.walton.bot/openapi.json
+      artifacts:
+      - apis.yml
+      - authentication/aureliusagent-dev-authentication.yml
+      - conventions/aureliusagent-dev-conventions.yml
+      - errors/aureliusagent-dev-problem-types.yml
+      - lifecycle/aureliusagent-dev-lifecycle.yml
+      - conformance/aureliusagent-dev-conformance.yml
+      - plans/aureliusagent-dev-plans-pricing.yml
+      - mcp/aureliusagent-dev-mcp.yml
+      - skills/_index.yml
+- target: $.info
+  update:
+    x-payment-challenge-observed:
+      fetched: '2026-09-19'
+      request: POST https://mpp.openmodel.sh/v1/plan (unpaid)
+      status: 402
+      www_authenticate: 'Payment id="<uuid>", realm="mpp.openmodel.sh", method="stripe", intent="charge", request="<base64 JSON {amount,currency}>"'
+      headers: [payment-required, x-wundership-agent-payment-required, x-wundership-agent-price, 'link: <https://mpp.openmodel.sh/v1/plan>; rel="payment"']
+      note: The spec's 402 response declares only WWW-Authenticate and X-Wundership-Agent-Price; the live response adds Payment-Required, X-Wundership-Agent-Payment-Required and an RFC 8288 Link rel="payment".
+- target: $.servers
+  update:
+  - url: https://rpc.aureliusagent.dev
+    description: Alias origin (serves the identical spec and all MPP discovery documents; the A2A endpoint host)
+    x-apievangelist-observed: true
+  - url: https://api.wundership.com
+    description: Alias origin named as the base on https://wundercorp.co/agents/
+    x-apievangelist-observed: true
+- target: $.paths['/mpp/plan'].post
+  update:
+    x-apievangelist-observed: 'POST returned HTTP 500 with an empty body on 2026-09-19 (no Deprecation/Sunset header); the successor /v1/plan returned the documented 402.'
+- target: $.paths['/mpp/aurelius/plan'].post
+  update:
+    x-apievangelist-observed: 'POST via rpc.aureliusagent.dev returned HTTP 500 with an empty body on 2026-09-19; the successor /v1/plan returned the documented 402.'
+- target: $.paths['/v1/chat/completions'].post
+  update:
+    x-apievangelist-observed: 'Unpaid POST returned 402 with content-type application/problem+json (RFC 9457) - the only route observed using problem+json.'
+- target: $.paths['/v1/capabilities'].get
+  update:
+    x-apievangelist-observed: 'GET returned 200; body self-identifies as "OpenModel MPP Gateway", gatewayApiKeyRequired false, corsAllowedOrigins "*", streamingPassthrough true.'
+- target: $.components.schemas.PaymentRequired
+  update:
+    x-apievangelist-observed-extra-fields:
+      humanFallback:
+        apiKeysPath: https://api.wundership.com/api-keys
+        billingPath: https://api.wundership.com/managed-apps/billing
+      payment:
+        receiptHeader: X-Wundership-Agent-Payment-Receipt
+        verifiedHeader: X-Wundership-Agent-Payment-Verified
+        method: machine_payment_proxy
+      note: Fields present in the live 402 body on 2026-09-19 and absent from the declared schema (additionalProperties is permitted).

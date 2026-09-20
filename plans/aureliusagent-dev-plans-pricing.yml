@@ -1,0 +1,109 @@
+generated: '2026-09-19'
+method: probed
+source: https://mpp.openmodel.sh/agent-products.json
+sources:
+- https://mpp.openmodel.sh/agent-products.json
+- https://mpp.openmodel.sh/.well-known/mpp.json
+- https://mpp.openmodel.sh/machine-payments.json
+- https://mpp.openmodel.sh/openapi.json (x-agent-price / x-payment-info per operation)
+- https://wundercorp.co/agents/ (human pricing cards)
+- https://mpp.openmodel.sh/v1/capabilities (gateway surcharge statement)
+- live unpaid POST https://mpp.openmodel.sh/v1/plan (402 challenge carrying the price)
+note: >-
+  WunderCorp publishes no subscription tiers for these APIs; pricing is per call and machine-readable.
+  Every price below was read from the provider's JSON product catalog and cross-checked against the
+  OpenAPI's x-agent-price extension and the live 402 challenge (x-wundership-agent-price: 1.00 USD on
+  /v1/plan). The human page https://wundercorp.co/agents/ lists the same five products under their LEGACY
+  /mpp/* paths and adds "$0.50+ call pricing". The inference gateway has no price of its own: GET
+  /v1/capabilities states gatewayApiKeyRequired false and the agent card states gatewaySurcharge false -
+  the caller pays the upstream provider's MPP challenge, which the gateway passes through unchanged.
+  Discovery (models, providers, capabilities, capacity offers and quotes) is free and unauthenticated.
+  The 402 body also names a "humanFallback" - api.wundership.com/api-keys and /managed-apps/billing for
+  persistent API keys, higher quotas and usage-based billing - but both URLs returned 403 anonymously on
+  2026-09-19, so no key-based tier can be recorded. Payment rail: Stripe Shared Payment Token (card, Link)
+  via MPP; the capacity marketplace reports paymentNetwork tempo-testnet.
+plan_count: 5
+currency: USD
+billing_model: per-call machine payment (MPP, HTTP 402 challenge; x402-compatible proxies accepted)
+payment_rails:
+- key: stripe_spt
+  method: stripe
+  intent: charge
+  paymentMethodTypes: [card, link]
+  description: Stripe Shared Payment Token rail for card and Link machine payments
+plans:
+- name: Wundership app plan
+  key: wundership_plan
+  price: 1.00
+  currency: USD
+  period: per request
+  operation: postWundershipPlan (POST /v1/plan; legacy /mpp/plan, /mpp/aurelius/plan)
+  included_quota: one structured software plan (productBrief, buildPhases, architecture, risks, recommendedNextPaidCall)
+  overage: n/a
+  limits: none published
+- name: BuilderStudio preview
+  key: builder_preview
+  price: 5.00
+  currency: USD
+  period: per request
+  operation: postBuilderPreview (POST /v1/builder/preview; legacy /mpp/builder/preview)
+  included_quota: one BuilderStudio preview package for a product idea
+  overage: n/a
+  limits: none published
+- name: Image generation
+  key: image_generation
+  price: 1.00
+  currency: USD
+  period: per request
+  operation: postImageGeneration (POST /v1/images/generate; legacy /mpp/images/generate)
+  included_quota: one generated image
+  overage: n/a
+  limits: none published
+- name: Listing from image
+  key: listing_from_image
+  price: 0.75
+  currency: USD
+  period: per request
+  operation: postListingFromImage (POST /v1/listings/from-image; legacy /mpp/listings/from-image)
+  included_quota: one commerce listing (metadata, description, tags, selling points) from an image
+  overage: n/a
+  limits: none published
+- name: OpenModel pricing estimate
+  key: openmodel_pricing_estimate
+  price: 0.01
+  currency: USD
+  period: per request
+  operation: postOpenmodelPricingEstimate (POST /v1/pricing/estimate; legacy /mpp/openmodel/pricing/estimate)
+  included_quota: one effective-dated provider pricing and allowance-consumption estimate
+  overage: n/a
+  limits: none published
+deprecated_prices:
+- name: Chat completion (legacy fixed-price route)
+  price: 0.50
+  currency: USD
+  period: per request
+  operation: postChatCompletion (POST /mpp/chat/completions, deprecated; successor /v1/chat/completions is upstream-priced)
+  note: Still advertised at $0.50 on https://wundercorp.co/agents/ but absent from agent-products.json; the spec marks the route deprecated.
+free_tier:
+  name: Public discovery and capacity marketplace browsing
+  price: 0
+  included: GET /v1/models, /v1/providers, /v1/capabilities, /.well-known/mpp.json, /agent-products.json, /machine-payments.json, /openapi.json, /llms.txt, GET /mpp/capacity, /mpp/capacity/offers, POST /mpp/capacity/quotes
+  account_required: false
+upstream_priced:
+  name: OpenModel MPP inference gateway
+  operations: [postMppChatCompletions, postMppResponses, postMppMessages, postMppEmbeddings, postMppImageGeneration, postMppAudioTranscription, postMppAudioSpeech, postMppModeration, relayMppProviderRequest]
+  price: set by the selected upstream provider's own MPP challenge
+  gateway_surcharge: false
+  gateway_api_key_required: false
+capacity_marketplace:
+  api: Walton Capacity MPP API
+  pricing_models: [hourly_capacity, metered_model_usage, workspace_hourly, per_task, session_fee, refundable_deposit]
+  note: Prices are per offer (CapacityOffer / CapacityQuote carry amountCents, depositCents, platformFeeCents); no fixed tariff is published. GET /mpp/capacity/offers returned a live offer list on 2026-09-19.
+x-evidence:
+  fetched: '2026-09-19'
+  probes:
+  - {url: 'https://mpp.openmodel.sh/agent-products.json', status: 200, content_type: application/json}
+  - {url: 'https://mpp.openmodel.sh/.well-known/mpp.json', status: 200, content_type: application/json}
+  - {url: 'https://mpp.openmodel.sh/v1/plan', method: 'POST (unpaid)', status: 402, price_header: 'x-wundership-agent-price: 1.00 USD'}
+  - {url: 'https://api.wundership.com/api-keys', status: 403}
+  - {url: 'https://wundercorp.co/agents/', status: 200}

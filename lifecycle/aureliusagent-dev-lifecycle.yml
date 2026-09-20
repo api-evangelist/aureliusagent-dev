@@ -1,0 +1,102 @@
+generated: '2026-09-19'
+method: searched
+source:
+- openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (deprecated flags, x-successor-path, info.version)
+- https://mpp.openmodel.sh/agent-products.json (legacyPaths / successorPath per product)
+- https://ghcr.io/v2/wundercorp/aurelius-agent/tags/list (runtime versions and image build dates)
+- https://aureliusagent.dev/.well-known/agent-card.json (version 0.4.3) and https://rpc.aureliusagent.dev/.well-known/agent-card.json (version 0.4.0)
+- OPTIONS https://rpc.aureliusagent.dev/a2a (access-control-expose-headers naming Deprecation, Sunset, X-OpenModel-Deprecated-Path, X-OpenModel-Successor-Path)
+- https://wundercorp.co/agents/
+versioning:
+  scheme: mixed
+  wundership_mpp_api:
+    scheme: date-based info.version plus a /v1 path prefix
+    current_version: '2026-07-15'
+    path_prefix: /v1
+    detail: >-
+      Successor routes live under /v1/...; the earlier generation lived under /mpp/... (and
+      /mpp/aurelius/plan, the route wundercorp.co/agents/ still advertises). No versioning policy document
+      is published.
+  walton_capacity_mpp_api:
+    scheme: semver info.version, unversioned paths
+    current_version: 4.0.0
+    detail: GET /mpp/capacity reports version "2026-07-compute-models-workspaces-v4".
+  aurelius_agent:
+    scheme: semver runtime version (agent card version == runtimeVersion == container tag)
+    current_version: 0.4.3
+    detail: >-
+      The website card (aureliusagent.dev) declares 0.4.3 and the rpc/mpp/wundership/walton copies declare
+      0.4.0 - a version skew between the static copy and the copy the runtime serves. Container tags:
+      0.3.7 (2026-06-05), 0.3.9 (2026-06-05), 0.4.1, 0.4.2, 0.4.3 (2026-06-07); latest == 0.4.3.
+  a2a_protocol_version: 0.3.0
+  mpp_discovery_schema_version: '2026-07-22'
+deprecation:
+  policy_url: null
+  policy_published: false
+  mechanism_published: true
+  sunset_header: unobserved
+  deprecation_header: unobserved
+  detail: >-
+    No written deprecation policy exists, but the provider publishes a machine-readable deprecation
+    SURFACE: seven operations carry deprecated: true and x-successor-path in the OpenAPI, every product in
+    agent-products.json and machine-payments.json lists legacyPaths[] and successorPath, each deprecated
+    operation's description says "This path is deprecated. Use https://mpp.openmodel.sh/v1/... instead",
+    and the origin exposes Deprecation, Sunset, X-OpenModel-Deprecated-Path and X-OpenModel-Successor-Path
+    response headers through CORS. On 2026-09-19 an unpaid POST to /mpp/plan and /mpp/aurelius/plan returned
+    HTTP 500 with an empty body and none of those headers, so the header behaviour and any sunset date are
+    unverified; the routes may already be broken rather than deprecated-but-working. No sunset dates are
+    published anywhere.
+deprecated_operations:
+- operationId: postWundershipPlan
+  method: POST
+  path: /mpp/plan
+  successor: /v1/plan
+  sunset: null
+  observed_status: 500
+- operationId: postWundershipPlan
+  method: POST
+  path: /mpp/aurelius/plan
+  successor: /v1/plan
+  sunset: null
+  observed_status: 500
+  note: the path still advertised on https://wundercorp.co/agents/ ("Aurelius App Plan $1")
+- operationId: postBuilderPreview
+  method: POST
+  path: /mpp/builder/preview
+  successor: /v1/builder/preview
+  sunset: null
+- operationId: postImageGeneration
+  method: POST
+  path: /mpp/images/generate
+  successor: /v1/images/generate
+  sunset: null
+- operationId: postListingFromImage
+  method: POST
+  path: /mpp/listings/from-image
+  successor: /v1/listings/from-image
+  sunset: null
+- operationId: postChatCompletion
+  method: POST
+  path: /mpp/chat/completions
+  successor: /v1/chat/completions
+  sunset: null
+  note: 'fixed USD 0.50 route replaced by the upstream-priced unified gateway; description: "Deprecated fixed-price Wundership chat route retained during migration to the unified MPP inference gateway."'
+- operationId: postOpenmodelPricingEstimate
+  method: POST
+  path: /mpp/openmodel/pricing/estimate
+  successor: /v1/pricing/estimate
+  sunset: null
+maturity:
+  stated: active
+  evidence: >-
+    /.well-known/mpp.json status "active"; the capacity marketplace reports paymentNetwork "tempo-testnet"
+    and paymentReady true, i.e. its payment rail is a test network; the agent card's connectorPolicy is
+    "draft-only-by-default". The A2A runtime has not shipped a new container tag since 2026-06-07 while the
+    MPP API's info.version is 2026-07-15 and its discovery documents regenerate on every request (generatedAt).
+sla:
+  url: null
+  public_uptime_target: null
+  notes: No SLA published.
+status_page: null
+status_page_note: No status page found (wundercorp.co/status and builderstudio.dev/status are SPA shells with no status content; no status.* subdomain is referenced anywhere). No StatusPage pointer is emitted.
+changelog: changelog/aureliusagent-dev-changelog.yml

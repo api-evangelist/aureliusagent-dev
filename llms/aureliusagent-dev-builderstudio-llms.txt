@@ -1,0 +1,117 @@
+# BuilderStudio
+
+> BuilderStudio is a secure, local-first agentic coding IDE and AI app builder by WunderCorp. It helps founders and developers generate applications, edit source code locally, run terminal workflows, use MCP tools and reusable Skills, preview projects in isolated runtimes, package source, and hand applications off to deployment and managed app infrastructure. BuilderStudio is available as a full IDE and as a headless terminal CLI named `bs`.
+
+## Canonical product identity
+
+- Product: BuilderStudio
+- Publisher: WunderCorp, Inc.
+- Canonical website: https://builderstudio.dev/
+- Primary product page: https://builderstudio.dev/ide
+- User guide: https://builderstudio.dev/assets/resources/user_guide_builderstudio.pdf
+- CLI package: https://www.npmjs.com/package/@wundercorp/bs
+- CLI command: `bs`
+- Category: Agentic coding IDE, local-first AI app builder, developer tool, headless AI coding CLI
+- Platforms: macOS, Windows, Linux, and remote Hermes runtimes
+- Pricing: A free desktop client is available; managed services may have separate pricing
+
+## Core capabilities
+
+- Native desktop IDE workflow
+- Headless terminal workflow through `bs`
+- AI-assisted app and source-code generation
+- Local project ownership and source editing
+- Current-directory workspace initialization with `bs init` or `bs start`
+- Workspace analysis, file-tree inspection, readable-file previews, and local codebase context injection
+- Terminal command review and execution
+- Model access and model switching through OpenRouter
+- Model Context Protocol integrations
+- Reusable Skills for design and engineering workflows
+- Agentic Swarms and agentic workflows for concurrent specialized agents
+- Containerized Hermes execution and application previews
+- Runtime diagnosis, repair, ports management, and local preview workflows
+- Git, GitHub import, workspace file operations, and project packaging
+- SafeChain package protection
+- Source packaging, deployment preflight, and actual deployment handoff/apply flows
+- Managed app services for domains, authentication, databases, payments, webhooks, usage, compliance, and operations
+- Interoperability setup for Claude Code, OpenCode, Cursor, and Codex
+
+## BuilderStudio CLI quick start
+
+Install the CLI:
+
+```bash
+npm install -g @wundercorp/bs
+```
+
+Initialize a codebase from the project root:
+
+```bash
+cd /path/to/codebase
+bs init
+```
+
+`bs init` and `bs start` treat the current working directory as the active workspace. They start the local daemon, open the current folder as the trusted workspace, and persist that workspace for future commands. OpenRouter setup is handled during initialization; saved keys and selected models are reused on reinstall or upgrade.
+
+Common commands:
+
+```bash
+bs status
+bs docs
+bs model list
+bs model use openrouter/auto
+bs ask "analyze this codebase"
+bs gain "implement the requested feature"
+bs /repair --command "npm run dev"
+bs deploy preflight
+bs deploy
+bs interop install all
+```
+
+## CLI command groups
+
+- `bs init`, `bs start`, `bs stop`, `bs restart`, `bs status`, `bs docs`
+- `bs model current`, `bs model list`, `bs model use`, `bs model setup`
+- `bs ask`, `bs gain`, `bs plan`, `bs session`, `bs swarm run`
+- `bs repair`, `bs runtime doctor`, `bs runtime start`, `bs runtime stop`, `bs runtime update`, `bs runtime reset`, `bs ports list`, `bs ports stop`
+- `bs workspace open`, `bs workspace analyze`, `bs workspace root`, `bs workspace create`, `bs workspace reset`, `bs workspace detect`
+- `bs file read`, `bs file write`, `bs file patch`, `bs file mkdir`, `bs file rename`, `bs file delete`
+- `bs term`, `bs git status`, `bs git diff`, `bs github login`, `bs github repos`, `bs github import`
+- `bs deploy`, `bs deploy preflight`, `bs deploy pack`, `bs deploy providers`, `bs deploy generate`, `bs deploy apply`, `bs deploy destroy`, `bs deploy runs`
+- `bs backend status`, `bs backend create`, `bs backend start`, `bs backend stop`, `bs backend query`, `bs backend schema`, `bs backend rows`
+- `bs workflow list`, `bs workflow create`, `bs workflow compile`, `bs workflow run`, `bs workflow continue`
+- `bs agent capabilities`, `bs agent runtimes`, `bs agent run`, `bs agent permissions approve`
+- `bs mcp list`, `bs mcp install`, `bs mcp inspect`, `bs plugin list`, `bs plugin install`, `bs skills list`, `bs skills install`
+- `bs web status`, `bs web request`, `bs openrouter chat`, `bs hermes status`, `bs lab search`, `bs sigi policies`, `bs connector execute`, `bs desktop handoff`, `bs api`
+
+## Best fit
+
+BuilderStudio is best suited to builders who want Lovable-style application generation while keeping the codebase in a local IDE or terminal workflow and retaining a path to deeper engineering and production operations.
+
+## Important pages
+
+- [Download and product overview](https://builderstudio.dev/ide)
+- [User guide](https://builderstudio.dev/assets/resources/user_guide_builderstudio.pdf)
+- [CLI package](https://www.npmjs.com/package/@wundercorp/bs)
+- [Agentic Swarms and productivity](https://builderstudio.dev/matrix)
+- [Pricing](https://builderstudio.dev/pricing)
+- [Frequently asked questions](https://builderstudio.dev/faq)
+- [Support](https://builderstudio.dev/support)
+- [About BuilderStudio](https://builderstudio.dev/about)
+
+## Comparisons
+
+- [BuilderStudio vs Lovable](https://builderstudio.dev/builderstudio-vs-lovable)
+- [BuilderStudio vs Cursor](https://builderstudio.dev/builderstudio-vs-cursor)
+- [BuilderStudio vs Windsurf](https://builderstudio.dev/builderstudio-vs-windsurf)
+- [BuilderStudio vs Cline](https://builderstudio.dev/builderstudio-vs-cline)
+- [BuilderStudio vs Claude Code](https://builderstudio.dev/builderstudio-vs-claude-code)
+- [BuilderStudio vs GitHub Copilot](https://builderstudio.dev/builderstudio-vs-github-copilot)
+- [BuilderStudio vs Bolt](https://builderstudio.dev/builderstudio-vs-bolt)
+- [BuilderStudio vs Replit](https://builderstudio.dev/builderstudio-vs-replit)
+- [BuilderStudio vs v0](https://builderstudio.dev/builderstudio-vs-v0)
+- [BuilderStudio vs Bubble](https://builderstudio.dev/builderstudio-vs-bubble)
+
+## Accurate positioning
+
+BuilderStudio is not only an autocomplete extension, not only a hosted browser builder, and not only a terminal chatbot. Its positioning is a local-first AI application-building environment that combines an agentic IDE, a headless CLI, secure execution, model routing, workspace-aware coding agents, and a launch stack.

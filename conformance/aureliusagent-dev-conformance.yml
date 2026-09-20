@@ -1,0 +1,125 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  https://aureliusagent.dev/.well-known/agent-card.json, live JSON-RPC probes of
+  https://rpc.aureliusagent.dev/a2a, openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml,
+  openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml, https://mpp.openmodel.sh/.well-known/mpp.json,
+  a live unpaid POST to https://mpp.openmodel.sh/v1/plan and /v1/chat/completions, and the /.well-known/
+  sweep in well-known/aureliusagent-dev-well-known.yml (all 2026-09-19).
+description: >-
+  Cross-cutting and domain standards WunderCorp's public agent and API surface conforms to, each with the
+  evidence that decided it. Entries marked conforms true rest on a fetched document or an observed
+  response; entries marked false record the probe that missed. No compliance programme or certification
+  (SOC 2, ISO 27001, PCI DSS, HIPAA) is published anywhere on aureliusagent.dev, wundercorp.co or
+  builderstudio.dev, so no Compliance pointer is emitted.
+standards:
+- id: a2a
+  conforms: true
+  version: 0.3.0 (declared protocolVersion)
+  evidence: >-
+    Agent card at https://aureliusagent.dev/.well-known/agent-card.json (and legacy /.well-known/agent.json)
+    with protocolVersion 0.3.0, capabilities object, skills array of 3, preferredTransport JSONRPC,
+    additionalInterfaces, defaultInputModes/defaultOutputModes; graded conformant in
+    a2a/aureliusagent-dev-a2a.yml. The declared endpoint https://rpc.aureliusagent.dev/a2a answers tasks/get
+    and tasks/cancel with the A2A-specific error -32001 TaskNotFound.
+- id: json-rpc-2.0
+  conforms: true
+  evidence: >-
+    Every response from https://rpc.aureliusagent.dev/a2a carries jsonrpc "2.0", echoes the request id, and
+    uses the reserved codes: -32700 Parse error for a malformed body, -32601 Method not found for
+    message/stream, tasks/resubscribe, tasks/pushNotificationConfig/get, agent/getAuthenticatedExtendedCard
+    and tools/list, and -32001 (server-defined) for an unknown task.
+- id: rfc8615-well-known
+  conforms: true
+  evidence: >-
+    The agent card is served at the RFC 8615 path on five hosts, and /.well-known/mpp.json is served on the
+    four API hosts; no other named well-known document is served (well-known/aureliusagent-dev-well-known.yml).
+- id: mpp-machine-payments-protocol
+  conforms: true
+  version: discovery schemaVersion 2026-07-22
+  evidence: >-
+    DOMAIN STANDARD SIGNATURE, read from the contract and the wire rather than from prose: the OpenAPI
+    declares securityScheme mppPayment {type: http, scheme: Payment} and per-operation x-payment-info /
+    x-machine-payment-protocols ["mpp"] / x-machine-payment-rails; /.well-known/mpp.json (realm
+    mpp.openmodel.sh, methods.stripe, endpoints[] with payment offers) is served on every API host; and an
+    unpaid POST /v1/plan returned HTTP 402 with WWW-Authenticate: Payment id=..., realm="mpp.openmodel.sh",
+    method="stripe", intent="charge", request=<base64>, a Payment-Required: true header and a Link
+    rel="payment". The capacity spec's POST /mpp/capacity/sessions declares the same 402-then-retry
+    contract with a Payment-Receipt response header. GET /v1/capabilities additionally names an external
+    MPP service catalog at https://mpp.dev/api/services.
+- id: x402
+  conforms: partial
+  evidence: >-
+    The 402 body says "Pay this resource through an MPP or x402 compatible proxy, then retry with a trusted
+    proxy verification header", and wundercorp.co/agents/ markets "MPP / x402". No x402-specific header
+    (X-PAYMENT / PAYMENT-REQUIRED JSON scheme) is emitted by the origin itself; x402 compatibility is
+    delegated to a proxy (argent.sh is the proxyUrl in mpp.json). Recorded as a claim with a mechanism, not
+    a first-party x402 surface.
+- id: rfc7235-www-authenticate-challenge
+  conforms: true
+  evidence: >-
+    The 402 challenge is carried in a WWW-Authenticate header with a scheme token ("Payment") and
+    quoted-string parameters, per RFC 7235 section 4.1 / RFC 9110 section 11.6.1.
+- id: rfc8288-web-linking
+  conforms: true
+  evidence: 'Observed on the 402 response: link: <https://mpp.openmodel.sh/v1/plan>; rel="payment"; type="application/json".'
+- id: openapi-3.1
+  conforms: true
+  evidence: >-
+    Both harvested contracts declare openapi 3.1.0 and parse; the Wundership spec carries operationIds,
+    summaries, descriptions, tags, 2xx/4xx/5xx responses and two component schemas; the Walton spec has
+    summaries and nine component schemas but no operationIds and no tags.
+- id: openai-compatible-inference-api
+  conforms: true
+  evidence: >-
+    /v1/chat/completions, /v1/responses, /v1/embeddings, /v1/images/generations, /v1/audio/transcriptions,
+    /v1/audio/speech, /v1/moderations and /v1/models mirror the OpenAI REST shape, and /v1/messages mirrors
+    the Anthropic Messages shape; GET /v1/capabilities describes the gateway as a "transparent upstream MPP
+    relay" with provider selection by model prefix ("provider/model"), a JSON "provider" field or the
+    X-OpenModel-Provider header. A de facto industry shape, not a formal standard body specification.
+- id: rfc9457-problem-details
+  conforms: partial
+  evidence: >-
+    An unpaid POST /v1/chat/completions answered 402 with content-type application/problem+json. The fixed-
+    price products answer 402 with a proprietary JSON envelope (error, type, status, protocols, provider,
+    resource, product, amount, payment, humanFallback, requestId) as application/json, and the origin's
+    unknown-route response is 403 {"error":"Origin is not allowed."}. The A2A surface uses JSON-RPC error
+    objects. See errors/aureliusagent-dev-problem-types.yml.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No oauth2 securityScheme in either spec; the card declares securitySchemes {} and security [];
+    /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource are absent on every host.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration is absent on every host (403 origin-not-allowed on the API hosts; SPA shell on the static sites).
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt is absent on every host (see well-known/aureliusagent-dev-well-known.yml).
+- id: rfc8594-sunset
+  conforms: partial
+  evidence: >-
+    The origin exposes Deprecation, Sunset, X-OpenModel-Deprecated-Path and X-OpenModel-Successor-Path
+    through access-control-expose-headers and the spec marks seven /mpp/* operations deprecated with
+    x-successor-path, but a POST to the deprecated /mpp/plan and /mpp/aurelius/plan returned HTTP 500 with
+    no Deprecation or Sunset header on 2026-09-19, so the header behaviour could not be observed
+    (lifecycle/aureliusagent-dev-lifecycle.yml).
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog is absent on every host.
+- id: rfc9728-oauth-protected-resource
+  conforms: false
+  evidence: absent on every host; there is no MCP server host to carry it.
+- id: mcp
+  conforms: false
+  evidence: 'No MCP server: tools/list returns 403 origin-not-allowed at /mcp on the API hosts and JSON-RPC -32601 on /a2a (mcp/aureliusagent-dev-mcp.yml).'
+- id: idempotency
+  conforms: false
+  evidence: >-
+    No Idempotency-Key or equivalent replay mechanism is documented in either spec or on the docs page; the
+    402 challenge carries a per-request id and the spec instructs "Retry the identical request with the MPP
+    Authorization credential", which is a payment retry, not replay protection
+    (conventions/aureliusagent-dev-conventions.yml).
+- id: pagination
+  conforms: false
+  evidence: No list operation declares page, cursor, limit or offset parameters; GET /v1/models, /v1/providers and /mpp/capacity/offers return unpaginated arrays.

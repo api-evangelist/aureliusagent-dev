@@ -1,0 +1,23 @@
+# WunderCorp Agent-Payable API
+
+WunderCorp exposes MPP-native software generation, GPU and edge compute capacity, hosted model inference, shared workspaces, and supervised resources.
+
+## Discovery
+MPP discovery: https://mpp.openmodel.sh/.well-known/mpp.json
+MPP OpenAPI: https://mpp.openmodel.sh/openapi.json
+Capacity OpenAPI: https://mpp.openmodel.sh/mpp/capacity/openapi.json
+
+## Safe capacity marketplace
+GET https://mpp.openmodel.sh/mpp/capacity
+GET https://mpp.openmodel.sh/mpp/capacity/offers
+POST https://mpp.openmodel.sh/mpp/capacity/quotes
+POST https://mpp.openmodel.sh/mpp/capacity/sessions
+GET https://mpp.openmodel.sh/mpp/capacity/sessions/{sessionId}
+POST https://mpp.openmodel.sh/mpp/capacity/sessions/{sessionId}/peering-profile
+POST https://mpp.openmodel.sh/mpp/capacity/sessions/{sessionId}/connection-confirmed
+POST https://mpp.openmodel.sh/mpp/capacity/sessions/{sessionId}/cancel
+POST https://mpp.openmodel.sh/capacity/sessions/{sessionId}/peering-offer (authenticated provider)
+
+Supported profiles: GPU_CAPACITY, MODEL_INFERENCE, EDGE_COMPUTE, SHARED_WORKSPACE, SERVICE_ROBOT, THREE_D_PRINTER.
+Transport, freight, delivery, and mobile drone profiles are disabled by default.
+Offers and quotes are free. Session creation returns HTTP 402, accepts an MPP Authorization credential on retry, and returns Payment-Receipt plus X-Capacity-Access-Token.

@@ -1,0 +1,141 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml, openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml,
+  https://mpp.openmodel.sh/.well-known/mpp.json, https://mpp.openmodel.sh/v1/capabilities, the live unpaid
+  402 on https://mpp.openmodel.sh/v1/plan, JSON-RPC probes of https://rpc.aureliusagent.dev/a2a and
+  https://wundercorp.co/agents/ (all 2026-09-19).
+description: >-
+  How WunderCorp's agent surfaces behave across calls. Three surfaces share one origin: an anonymous A2A
+  JSON-RPC endpoint for the Aurelius orchestrator, a REST API whose paid routes are gated by HTTP 402
+  Machine Payments Protocol challenges rather than by credentials, and a capacity marketplace whose paid
+  session issues a scoped access token. There is no API key, no OAuth and no idempotency key anywhere.
+
+surfaces:
+- name: Aurelius Agent A2A endpoint
+  url: https://rpc.aureliusagent.dev/a2a
+  style: A2A 0.3.0 over JSON-RPC 2.0 (HTTPS POST, application/json)
+  methods_implemented: [tasks/get, tasks/cancel, message/send (declared by the card; not invoked)]
+  methods_refused: [message/stream, tasks/resubscribe, tasks/pushNotificationConfig/get, agent/getAuthenticatedExtendedCard, tools/list]
+  gated: false
+- name: Wundership MPP API
+  url: https://mpp.openmodel.sh (aliases rpc.aureliusagent.dev, api.wundership.com, api.walton.bot)
+  style: REST/JSON, OpenAPI 3.1.0
+  gated: paid routes by HTTP 402 challenge; discovery routes free
+- name: Walton Capacity MPP API
+  url: https://api.walton.bot (aliases mpp.openmodel.sh, rpc.aureliusagent.dev)
+  style: REST/JSON, OpenAPI 3.1.0
+  gated: session creation by HTTP 402 challenge; session operations by X-Capacity-Access-Token; provider routes by bearer token
+
+authentication:
+  style: payment-as-authorization (MPP)
+  detail: >-
+    Paid routes carry no API key. The first call returns 402 with a WWW-Authenticate: Payment challenge
+    (id, realm "mpp.openmodel.sh", method "stripe", intent "charge", request = base64 {amount, currency});
+    the client settles it through an MPP client or proxy and retries the identical request with the MPP
+    Authorization credential (securityScheme mppPayment: http scheme "Payment") or, for proxy flows, the
+    X-Wundership-Agent-Payment-Verified / X-Wundership-Agent-Payment-Receipt headers. Success responses
+    return paymentVerified true and a receipt (Payment-Receipt header on the capacity API). The inference
+    gateway relays the UPSTREAM provider's challenge and credential unchanged (gatewayApiKeyRequired false).
+    The A2A endpoint is anonymous (securitySchemes {}). See authentication/aureliusagent-dev-authentication.yml.
+
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  detail: >-
+    No Idempotency-Key header, no client-supplied request id and no replay guarantee is documented on any
+    write. The spec's retry instruction ("Retry the identical request with the MPP Authorization
+    credential") describes completing a payment, not deduplicating a call: the challenge id and the 402
+    body's requestId are server-issued per request and there is no statement that presenting the same
+    credential twice yields one charge. Because every mutating route is a paid purchase, the absence of
+    replay protection is a real cost risk for an agent that retries on timeout.
+  scope: []
+
+pagination:
+  style: none
+  detail: GET /v1/models, /v1/providers and /mpp/capacity/offers return complete arrays ({object:"list", data:[...]} for the gateway routes; {generatedAt, assets:[...]} for offers); no page, cursor, limit or offset parameters are declared anywhere.
+
+field_expansion: none
+sparse_fields: none
+metadata: none (no free-form metadata field on any request)
+
+request_id:
+  request_header: none documented
+  response_header: none observed
+  body_field: requestId on the 402 envelope (equals the WWW-Authenticate Payment id); receipt on paid 200 responses
+  detail: No X-Request-Id or traceparent is returned on any probed response.
+
+versioning:
+  style: path prefix /v1 plus date-based info.version (2026-07-15); legacy /mpp/* routes deprecated with x-successor-path
+  detail: lifecycle/aureliusagent-dev-lifecycle.yml
+
+provider_selection:
+  detail: >-
+    For the inference gateway, select the upstream provider with the X-OpenModel-Provider header, a
+    top-level "provider" JSON field, or a provider-prefixed model id ("provider/model" or
+    "provider:model"); default provider "openrouter"; provider-native paths via
+    /providers/{provider}/{upstreamPath}. Streaming responses are passed through (streamingPassthrough true).
+
+error_envelope:
+  shape: mixed - proprietary JSON {error, type, status, ..., requestId} on paid products, application/problem+json observed on the gateway 402, JSON-RPC error objects on A2A, {"error":"Origin is not allowed."} 403 for unknown routes
+  detail: errors/aureliusagent-dev-problem-types.yml
+
+rate_limit_signaling:
+  headers: none
+  detail: rate-limits/aureliusagent-dev-rate-limits.yml (limit_count 0; nothing published or observed)
+
+payment_signaling:
+  challenge_status: 402
+  challenge_header: WWW-Authenticate (scheme Payment)
+  extra_headers_observed: [Payment-Required, X-Wundership-Agent-Payment-Required, X-Wundership-Agent-Price, 'Link rel="payment"']
+  receipt_headers: [Payment-Receipt (capacity API), X-Wundership-Agent-Payment-Receipt (proxy flow), Authentication-Info (gateway pass-through)]
+  price_declaration: x-agent-price / x-payment-info per operation in the OpenAPI; agent-products.json; .well-known/mpp.json endpoints[].payment
+  cors_exposed_headers: [Content-Type, Content-Length, Link, WWW-Authenticate, Authentication-Info, Payment-Receipt, Deprecation, Sunset, X-OpenModel-Deprecated-Path, X-OpenModel-Successor-Path, X-OpenModel-Gateway-Provider, X-OpenModel-Gateway-Upstream, X-Wundership-Agent-Price, X-Wundership-Agent-Payment-Required, X-Wundership-Agent-Payment-Receipt, X-Wundership-Agent-Payment-Verified, X-Wundership-Agent-Payment-Account-Scope, X-Ride-Access-Token]
+
+dry_run_mode:
+  supported: partial
+  detail: >-
+    Every paid route can be called unpaid and returns the full 402 challenge with product, price and
+    payment metadata without executing or charging - the provider's own CLI (argent) treats that 402 as the
+    PASS result of a smoke test. There is no dry-run of the paid execution itself. POST /mpp/capacity/quotes
+    is a free quote step before the paid session.
+
+reversibility:
+  grade: documented
+  detail: >-
+    One reversal operation exists and no window is stated anywhere, so the grade is documented (reversal
+    path only), not verified. NEVER assumed: no refund, void or cancellation is published for any
+    Wundership paid product, and the 502 "Paid forwarding failed" response has no refund path in the docs.
+  surfaces:
+  - write: POST /mpp/capacity/sessions (pay and reserve capacity)
+    reversal: POST /mpp/capacity/sessions/{sessionId}/cancel ("Cancel a capacity session", X-Capacity-Access-Token required)
+    operationId: none in the provider spec (assigned cancelCapacitySession in overlays/aureliusagent-dev-walton-capacity-mpp-api-overlay.yaml)
+    window: not stated
+    conditions: 'CapacitySession.cancellable (boolean) signals per session whether cancel is currently allowed; .well-known/mpp.json lists "refundable_deposit" among pricingModels and CapacityOffer/CapacityQuote carry depositCents, but no refund rule or window is written.'
+    docs: https://mpp.openmodel.sh/mpp/capacity/openapi.json
+  - write: POST /v1/plan, /v1/builder/preview, /v1/images/generate, /v1/listings/from-image, /v1/pricing/estimate (paid one-shot generations)
+    reversal: none published
+    window: n/a
+  - write: inference gateway POSTs (chat, responses, messages, embeddings, images, audio, moderations, relay)
+    reversal: none published (payment is settled with the upstream provider)
+    window: n/a
+  - write: A2A message/send (Aurelius task)
+    reversal: tasks/cancel is implemented (returns -32001 for unknown ids); no statement about cancelling an in-flight paid plan
+    window: not stated
+
+sandbox:
+  published: false
+  detail: >-
+    No test mode, test keys or test card values are published for these APIs. The capacity marketplace
+    reports paymentNetwork "tempo-testnet", and the argent CLI supports a locally-verified paid flow using an
+    operator-held MPP_PAYMENT_SECRET, but neither is a documented public sandbox, so no sandbox/ artifact is
+    written.
+
+cross_links:
+  authentication: authentication/aureliusagent-dev-authentication.yml
+  errors: errors/aureliusagent-dev-problem-types.yml
+  lifecycle: lifecycle/aureliusagent-dev-lifecycle.yml
+  rate_limits: rate-limits/aureliusagent-dev-rate-limits.yml
+  plans: plans/aureliusagent-dev-plans-pricing.yml
+  agent_card: a2a/aureliusagent-dev-a2a.yml

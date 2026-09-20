@@ -1,0 +1,112 @@
+generated: '2026-09-19'
+method: derived
+status: candidate
+source: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (one candidate tool per unique operationId)
+description: >-
+  WunderCorp ships NO Model Context Protocol server for the Aurelius Agent, the Wundership MPP API or the
+  Walton Capacity API. Searched 2026-09-19: POST tools/list to https://rpc.aureliusagent.dev/mcp,
+  https://mpp.openmodel.sh/mcp and https://api.wundership.com/mcp all return 403 {"error":"Origin is not
+  allowed."} (the origin's unknown-route shape); tools/list on the A2A endpoint returns JSON-RPC -32601;
+  https://aureliusagent.dev/mcp is the SPA shell; no @wundercorp MCP package exists on npm; the wundercorp
+  GitHub org publishes an awesome-mcp DIRECTORY of other people's servers but no server of its own.
+  BuilderStudio is an MCP CLIENT ("bs mcp list / install / inspect") and AgentVM sells "MCP Sandboxes"
+  (hosting), neither of which is a server for these APIs. The tool list below is therefore a DERIVED
+  candidate that an MCP server could expose; nobody serves it, and no endpoint URL is recorded.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: derived
+  checked: '2026-09-19'
+  probes:
+  - {url: 'https://rpc.aureliusagent.dev/mcp', method: 'POST tools/list', status: 403, body: '{"error":"Origin is not allowed."}'}
+  - {url: 'https://mpp.openmodel.sh/mcp', method: 'POST tools/list', status: 403, body: '{"error":"Origin is not allowed."}'}
+  - {url: 'https://rpc.aureliusagent.dev/a2a', method: 'POST tools/list', status: 200, body: '{"jsonrpc":"2.0","id":1,"error":{"code":-32601,"message":"Method not found"}}'}
+  - {url: 'https://aureliusagent.dev/mcp', method: GET, status: 200, body: 'SPA shell (text/html)'}
+server:
+  name: aureliusagent-dev
+  transport: http
+  url: null
+tools:
+- name: postWundershipPlan
+  description: Wundership app plan - generate a structured software plan, product outline, feature map and implementation-ready app direction (paid, USD 1.00; unpaid calls return HTTP 402)
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postWundershipPlan
+  paid: true
+- name: postBuilderPreview
+  description: BuilderStudio preview - prepare a preview package for a product idea (paid, USD 5.00)
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postBuilderPreview
+  paid: true
+- name: postImageGeneration
+  description: Image generation from a prompt after machine payment (paid, USD 1.00)
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postImageGeneration
+  paid: true
+- name: postListingFromImage
+  description: Generate commerce listing metadata from image input (paid, USD 0.75)
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postListingFromImage
+  paid: true
+- name: postChatCompletion
+  description: Deprecated fixed-price chat route (USD 0.50); successor is postMppChatCompletions
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postChatCompletion
+  paid: true
+  deprecated: true
+- name: postOpenmodelPricingEstimate
+  description: Resolve effective-dated provider pricing and cost-weighted monthly allowance consumption (paid, USD 0.01)
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postOpenmodelPricingEstimate
+  paid: true
+- name: getMppInferenceCapabilities
+  description: Describe the OpenModel MPP inference gateway (operation families, payment behaviour, provider selection) - public
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#getMppInferenceCapabilities
+  paid: false
+- name: getMppInferenceProviders
+  description: List upstream model providers reachable through the gateway - public
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#getMppInferenceProviders
+  paid: false
+- name: getMppInferenceModels
+  description: List model families and provider-prefixed model IDs - public
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#getMppInferenceModels
+  paid: false
+- name: postMppChatCompletions
+  description: OpenAI-shaped chat completion relayed to the selected provider; upstream 402 challenge and receipt passed through
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppChatCompletions
+  paid: upstream
+- name: postMppResponses
+  description: OpenAI Responses-shaped request relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppResponses
+  paid: upstream
+- name: postMppMessages
+  description: Anthropic Messages-shaped request relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppMessages
+  paid: upstream
+- name: postMppEmbeddings
+  description: Embeddings request relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppEmbeddings
+  paid: upstream
+- name: postMppImageGeneration
+  description: Image generation relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppImageGeneration
+  paid: upstream
+- name: postMppAudioTranscription
+  description: Audio transcription relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppAudioTranscription
+  paid: upstream
+- name: postMppAudioSpeech
+  description: Speech synthesis relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppAudioSpeech
+  paid: upstream
+- name: postMppModeration
+  description: Moderation request relayed to the selected provider
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#postMppModeration
+  paid: upstream
+- name: relayMppProviderRequest
+  description: Provider-native relay - preserves the upstream path, body, MPP Authorization credential, 402 challenge and receipt
+  source_operation: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml#relayMppProviderRequest
+  paid: upstream
+not_derived:
+  walton_capacity_api: >-
+    openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml declares no operationIds, so no candidate
+    tools are named for it; a server author would have to assign them.
+  a2a_agent: >-
+    The Aurelius agent's skills are A2A skills on a JSON-RPC endpoint, not MCP tools; see
+    a2a/aureliusagent-dev-a2a.yml.

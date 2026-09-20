@@ -1,0 +1,74 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the WunderCorp Walton Capacity MPP API
+  version: 1.0.0
+extends: openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+x-source: openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml (verbatim harvest of https://mpp.openmodel.sh/mpp/capacity/openapi.json, byte-identical to https://api.walton.bot/mpp/capacity/openapi.json and https://rpc.aureliusagent.dev/mpp/capacity/openapi.json)
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      catalog: https://apis.io/aureliusagent-dev
+      provider: WunderCorp
+      maintainer: Kin Lane <kin@apievangelist.com>
+      ownership_note: >-
+        The spec carries no info.contact; ownership rests on WunderCorp's /.well-known/mpp.json (provider
+        WunderCorp, Inc.) naming this document as capacityOpenapi, on wundercorp.co/llms.txt listing
+        WaltonBot as a WunderCorp product, and on walton.bot naming walton@wundercorp.co as support.
+      artifacts:
+      - apis.yml
+      - authentication/aureliusagent-dev-authentication.yml
+      - conventions/aureliusagent-dev-conventions.yml
+      - data-model/aureliusagent-dev-data-model.yml
+      - skills/_index.yml
+- target: $.servers
+  update:
+  - url: https://mpp.openmodel.sh
+    description: Alias origin (GET /mpp/capacity and /mpp/capacity/offers answered 200 here on 2026-09-19)
+    x-apievangelist-observed: true
+  - url: https://rpc.aureliusagent.dev
+    description: Alias origin (serves the identical spec)
+    x-apievangelist-observed: true
+- target: $.paths['/mpp/capacity'].get
+  update:
+    operationId: getCapacityDiscovery
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/offers'].get
+  update:
+    operationId: listCapacityOffers
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+    x-apievangelist-observed: 'GET returned 200 with a generatedAt timestamp and a live assets[] list on 2026-09-19.'
+- target: $.paths['/mpp/capacity/quotes'].post
+  update:
+    operationId: createCapacityQuote
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/sessions'].post
+  update:
+    operationId: createCapacitySession
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/sessions/{sessionId}'].get
+  update:
+    operationId: getCapacitySession
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/sessions/{sessionId}/cancel'].post
+  update:
+    operationId: cancelCapacitySession
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/sessions/{sessionId}/peering-profile'].post
+  update:
+    operationId: updateBuyerPeeringProfile
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/mpp/capacity/sessions/{sessionId}/connection-confirmed'].post
+  update:
+    operationId: confirmCapacityConnection
+    x-apievangelist-note: operationId assigned by API Evangelist; the provider's spec declares none
+- target: $.paths['/capacity/assets'].post
+  update:
+    operationId: listCapacityAsset
+    x-apievangelist-note: operationId assigned by API Evangelist; provider-side route (bearerAuth)
+- target: $.paths['/capacity/sessions/{sessionId}/peering-offer'].post
+  update:
+    operationId: publishProviderPeeringOffer
+    x-apievangelist-note: operationId assigned by API Evangelist; provider-side route (bearerAuth)

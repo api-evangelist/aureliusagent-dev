@@ -1,0 +1,97 @@
+generated: '2026-09-19'
+method: derived
+source:
+- openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml (components.schemas and $ref links)
+- openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (components.schemas, inline response schemas)
+- https://mpp.openmodel.sh/agent-products.json and https://mpp.openmodel.sh/.well-known/mpp.json (product and endpoint entities)
+description: >-
+  Entity graph for WunderCorp's two REST contracts, derived from $ref links and id-reference fields. The
+  Wundership spec is deliberately thin on schema - two named components (PaymentRequired, ErrorResponse)
+  plus inline per-operation request and response objects - so most of the graph lives in the Walton
+  capacity marketplace, whose nine components describe an offer -> quote -> session -> peering handoff
+  flow. No subway/ render exists.
+entities:
+- name: Product
+  source: agent-products.json / machine-payments.json / mpp.json endpoints[]
+  id_field: key (wundership_plan, builder_preview, image_generation, listing_from_image, openmodel_pricing_estimate)
+  fields: 'key, name, description, url, path, forwardPath, currency, amountMinorUnits, displayAmount, tags[], paymentProtocols[], legacyPaths[], successorPath'
+- name: PaymentRequired
+  source: Wundership components.schemas.PaymentRequired
+  fields: 'error, type, status, protocols[], provider, resource (uri), product{}, amount{}, payment{}, requestId'
+  required: [error, status, resource, amount, payment]
+- name: ErrorResponse
+  source: Wundership components.schemas.ErrorResponse
+  fields: [error, message, fallback]
+- name: PlanResult
+  source: inline 200 schema of postWundershipPlan
+  fields: 'ok, provider, productKey, productName, paymentVerified, receipt, generatedAt, result{productBrief, buildPhases[], architecture[], risks[], recommendedNextPaidCall{}}'
+  required: [ok, provider, productKey, paymentVerified, result]
+- name: CapacityOffer
+  source: Walton components.schemas.CapacityOffer
+  id_field: id
+  note: GET /mpp/capacity/offers returns assets[] of these; fields include asset type, pricing (amountCents, depositCents), mppEnabled, maxConcurrentSessions, containerRuntime, expiresAt
+- name: CapacityListingRequest
+  source: Walton components.schemas.CapacityListingRequest
+  note: provider-side body for POST /capacity/assets (bearerAuth)
+- name: CapacityQuoteRequest
+  source: Walton components.schemas.CapacityQuoteRequest
+- name: CapacityQuote
+  source: Walton components.schemas.CapacityQuote
+  id_field: quoteId (referenced by CapacitySessionRequest.quoteId)
+  fields: [amountCents, depositCents, platformFeeCents, ownerPayoutCents, currencyCode, paymentRail, expiresAt]
+- name: CapacitySessionRequest
+  source: Walton components.schemas.CapacitySessionRequest
+  required: [quoteId]
+- name: CapacitySession
+  source: Walton components.schemas.CapacitySession
+  id_field: id (uuid; the {sessionId} path parameter)
+  fields: 'id, status, statusLabel, asset (CapacityOffer), task, amountCents, formattedAmount, paymentRail, paymentReceipt, accessToken, handoffUrl, resourceAccess{}, gpuAccess{}, events[], cancellable, peering (PeeringExchange|null)'
+- name: BuyerPeeringProfile
+  source: Walton components.schemas.BuyerPeeringProfile
+- name: ProviderPeeringOffer
+  source: Walton components.schemas.ProviderPeeringOffer
+- name: PeeringExchange
+  source: Walton components.schemas.PeeringExchange
+  note: peering modes WIREGUARD, SSH, TAILSCALE, HTTPS_API, MANUAL (GET /mpp/capacity)
+relationships:
+- from: CapacityQuote
+  to: CapacityOffer
+  type: belongs_to
+  via: 'quote request names an offer/asset id'
+- from: CapacitySessionRequest
+  to: CapacityQuote
+  type: belongs_to
+  via: 'quoteId'
+- from: CapacitySession
+  to: CapacityOffer
+  type: has_one
+  via: 'asset ($ref CapacityOffer)'
+- from: CapacitySession
+  to: PeeringExchange
+  type: has_one
+  via: 'peering (nullable $ref)'
+- from: PeeringExchange
+  to: BuyerPeeringProfile
+  type: has_one
+  via: 'buyer side of the exchange (POST .../peering-profile)'
+- from: PeeringExchange
+  to: ProviderPeeringOffer
+  type: has_one
+  via: 'provider side of the exchange (POST /capacity/sessions/{sessionId}/peering-offer)'
+- from: CapacitySession
+  to: CapacityAccessToken
+  type: has_one
+  via: 'accessToken field == X-Capacity-Access-Token response header'
+- from: PaymentRequired
+  to: Product
+  type: has_one
+  via: 'product{} embeds the agent-products.json entry'
+- from: PlanResult
+  to: Product
+  type: belongs_to
+  via: 'productKey'
+- from: PaymentRequired
+  to: PaymentChallenge
+  type: has_one
+  via: 'requestId == WWW-Authenticate Payment id'
+id_prefixes: none (uuids for challenge ids and session ids; string keys for products)

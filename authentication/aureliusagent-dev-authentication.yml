@@ -1,0 +1,100 @@
+generated: '2026-09-19'
+method: searched
+source:
+- openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (securitySchemes.mppPayment)
+- openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml (securitySchemes.bearerAuth; X-Capacity-Access-Token header parameter and 201 response header)
+- https://mpp.openmodel.sh/.well-known/mpp.json (capacity.accessHeader, endpoints[].payment credentialHeader/challengeHeader/receiptHeader)
+- https://mpp.openmodel.sh/v1/capabilities (paymentBehavior, gatewayApiKeyRequired)
+- https://aureliusagent.dev/.well-known/agent-card.json (securitySchemes {}, security [])
+- live unpaid POST https://mpp.openmodel.sh/v1/plan (402 challenge) and JSON-RPC probes of https://rpc.aureliusagent.dev/a2a (2026-09-19)
+docs: https://wundercorp.co/agents/
+description: >-
+  Authentication profile for WunderCorp's three public surfaces, derived from both OpenAPI documents and
+  upgraded with the provider's discovery documents and live probes. The defining trait is that there is no
+  credential to obtain in advance: the A2A endpoint is anonymous, the paid REST routes use payment itself
+  as authorization (HTTP 402 challenge, then an MPP credential on retry), and the capacity marketplace
+  issues a per-session access token only after payment. No API key, OAuth 2.0, OpenID Connect or mutual
+  TLS scheme exists anywhere; the "API keys" the 402 body advertises as a human fallback sit behind
+  https://api.wundership.com/api-keys, which answered 403 anonymously.
+summary:
+  types: [none, http]
+schemes:
+- name: anonymous
+  type: none
+  surface: Aurelius Agent A2A endpoint https://rpc.aureliusagent.dev/a2a
+  description: >-
+    The agent card declares securitySchemes {} and security [] and supportsAuthenticatedExtendedCard false;
+    tasks/get and tasks/cancel answered JSON-RPC responses with no credentials, and
+    agent/getAuthenticatedExtendedCard returns -32601. GET on the endpoint returns 401 with an empty body,
+    which is a method restriction rather than an authentication challenge (no WWW-Authenticate header).
+  sources: [https://aureliusagent.dev/.well-known/agent-card.json]
+  probe: {url: 'https://rpc.aureliusagent.dev/a2a', method: 'POST tasks/get', status: 200, credentials: none}
+- name: mppPayment
+  type: http
+  scheme: Payment
+  surface: Wundership MPP API paid routes (postWundershipPlan, postBuilderPreview, postImageGeneration, postListingFromImage, postOpenmodelPricingEstimate and the deprecated /mpp/* routes) and Walton POST /mpp/capacity/sessions
+  description: >-
+    Declared in the spec as "MPP payment authorization returned after satisfying the HTTP 402 challenge"
+    and not applied through a security requirement (global security is absent), because the flow is
+    challenge-driven: the unpaid request is answered 402 with WWW-Authenticate: Payment id="<uuid>",
+    realm="mpp.openmodel.sh", method="stripe", intent="charge", request="<base64 {amount,currency}>" (plus
+    Payment-Required: true, X-Wundership-Agent-Payment-Required: true, X-Wundership-Agent-Price and a Link
+    rel="payment"). The client settles the challenge through an MPP client or proxy and "retries the
+    identical request with the MPP Authorization credential" (credentialHeader Authorization, per
+    mpp.json). A verifying proxy may instead present X-Wundership-Agent-Payment-Verified and
+    X-Wundership-Agent-Payment-Receipt (the 402 body's payment.verifiedHeader / receiptHeader; the
+    provider's argent CLI adds X-Wundership-Agent-Payment-Secret for operator-side verification). Success
+    returns paymentVerified true, a receipt, and on the capacity API a Payment-Receipt header. Payment
+    rail: Stripe Shared Payment Token (card, Link), networkId published in mpp.json and the spec's
+    x-machine-payment-rails.
+  sources:
+  - openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
+  - https://mpp.openmodel.sh/.well-known/mpp.json
+  probe: {url: 'https://mpp.openmodel.sh/v1/plan', method: 'POST (unpaid)', status: 402, www_authenticate_scheme: Payment, realm: mpp.openmodel.sh}
+- name: upstreamMppPassthrough
+  type: http
+  scheme: Payment (upstream provider's)
+  surface: OpenModel MPP inference gateway (postMppChatCompletions, postMppResponses, postMppMessages, postMppEmbeddings, postMppImageGeneration, postMppAudioTranscription, postMppAudioSpeech, postMppModeration, relayMppProviderRequest)
+  description: >-
+    GET /v1/capabilities: "gatewayApiKeyRequired: false"; "The upstream provider HTTP 402 status and
+    WWW-Authenticate challenge are passed through unchanged"; "The caller retries the same OpenModel
+    gateway URL with the MPP Authorization credential"; "Upstream Authentication-Info and payment receipt
+    headers are passed through unchanged". The gateway therefore holds no credential of its own; the
+    upstream model provider is the relying party. Observed: unpaid POST /v1/chat/completions returned 402
+    application/problem+json.
+  sources: [https://mpp.openmodel.sh/v1/capabilities]
+  probe: {url: 'https://mpp.openmodel.sh/v1/chat/completions', method: 'POST (unpaid)', status: 402, content_type: application/problem+json}
+- name: X-Capacity-Access-Token
+  type: apiKey
+  in: header
+  surface: Walton Capacity MPP API session routes (GET /mpp/capacity/sessions/{sessionId}, POST .../peering-profile, .../connection-confirmed, .../cancel)
+  description: >-
+    Not declared as a securityScheme; modelled in the spec as a required header parameter on each session
+    route and returned as a response header (and CapacitySession.accessToken) from the paid 201 of POST
+    /mpp/capacity/sessions. mpp.json names it capacity.accessHeader and marks those routes payment mode
+    "already_paid" with authorization.header X-Capacity-Access-Token. A per-session capability token
+    issued by payment, not an account key.
+  sources:
+  - openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml
+  - https://mpp.openmodel.sh/.well-known/mpp.json
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  surface: Walton Capacity MPP API provider-side routes (POST /capacity/assets, POST /capacity/sessions/{sessionId}/peering-offer)
+  description: >-
+    Declared securityScheme applied to the two capacity-PROVIDER operations (listing an asset, publishing a
+    peering handoff). mpp.json labels the peering-offer route "authenticated provider". How a provider
+    obtains the bearer token is not documented publicly.
+  sources: [openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml]
+oauth: false
+openid_connect: false
+api_keys: false
+api_keys_note: >-
+  The 402 body's humanFallback points at https://api.wundership.com/api-keys ("Subscribe for persistent API
+  keys, higher quotas, deployment access, managed BuilderStudio resources, and usage-based billing"); it
+  returned 403 {"error":"Origin is not allowed."} on 2026-09-19 and no key format, header name or scope
+  model is published, so no key scheme is recorded.
+notes: >-
+  /.well-known/oauth-authorization-server, /.well-known/oauth-protected-resource and
+  /.well-known/openid-configuration are absent on every host (well-known/aureliusagent-dev-well-known.yml);
+  no scopes/ artifact is written because there is no scope surface.

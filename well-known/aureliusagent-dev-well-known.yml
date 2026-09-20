@@ -1,0 +1,188 @@
+generated: '2026-09-19'
+method: probed
+source: live GET of the named /.well-known/ path list on every host this record knows (2026-09-19)
+hit_count: 0
+note: >-
+  None of the named discovery documents is served on any host. No WellKnown or SecurityTxt pointer is
+  emitted; this file records an absence. Two host families behave differently and both are recorded
+  faithfully: (1) the static sites aureliusagent.dev, wundercorp.co and builderstudio.dev are SPA
+  catch-alls that answer HTTP 200 text/html with the same shell for EVERY path, including a negative
+  control, so their 200s are soft-404s and are recorded as status 200 with a shell note - they are misses;
+  (2) the API hosts rpc.aureliusagent.dev, mpp.openmodel.sh, api.wundership.com and api.walton.bot share
+  one origin (same ALB IPs 52.15.123.35 / 3.22.35.57) and answer 403 {"error":"Origin is not allowed."}
+  for every unknown route, which is their not-found shape (an unrelated /v1/nonexistent-probe returned the
+  same body). The documents the API hosts DO serve under /.well-known/ are the A2A agent card
+  (/.well-known/agent-card.json and legacy /.well-known/agent.json, graded in a2a/aureliusagent-dev-a2a.yml)
+  and the Machine Payments Protocol discovery document /.well-known/mpp.json (schemaVersion 2026-07-22,
+  provider WunderCorp, Inc.), saved verbatim as aureliusagent-dev-mpp.json because it is the provider's
+  primary machine-readable index of the paid API surface. Neither is on the named list this index scores,
+  so neither counts toward hit_count. The aauth-resource.json path was probed on every host and is absent.
+extra_documents_served:
+- host: https://rpc.aureliusagent.dev
+  path: /.well-known/mpp.json
+  status: 200
+  content_type: application/json
+  file: aureliusagent-dev-mpp.json
+  note: also byte-identical at mpp.openmodel.sh, api.wundership.com (and /api/.well-known/mpp.json), api.walton.bot
+- host: https://aureliusagent.dev
+  path: /.well-known/agent-card.json
+  status: 200
+  content_type: application/json
+  file: ../a2a/aureliusagent-dev-agent-card.json
+hosts:
+- host: https://aureliusagent.dev
+  role: primary domain (Website); S3 + CloudFront SPA
+  path_echo_control: failed (every path returns the 1,702-byte index.html shell with HTTP 200)
+  documents:
+  - {path: /.well-known/security.txt, status: 200, note: SPA shell text/html - not a document, treated as miss}
+  - {path: /.well-known/openid-configuration, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-authorization-server, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-protected-resource, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/api-catalog, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/api-catalog.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ai-plugin.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ucp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/acp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/aauth-resource.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.yml, status: 200, note: SPA shell - miss}
+  - {path: /llms.txt, status: 200, note: SPA shell - miss}
+  - {path: /robots.txt, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/agent-card.json, status: 200, note: REAL application/json agent card (3,679 bytes) - see a2a/}
+  - {path: /.well-known/agent.json, status: 200, note: REAL application/json agent card, identical to the canonical path}
+- host: https://www.aureliusagent.dev
+  role: www variant
+  documents: []
+  note: does not resolve (NXDOMAIN)
+- host: https://rpc.aureliusagent.dev
+  role: A2A endpoint host and API host (serves the Wundership MPP OpenAPI, llms.txt and every MPP discovery document)
+  path_echo_control: passed (unknown routes answer 403 {"error":"Origin is not allowed."}; a negative-control path did the same)
+  documents:
+  - {path: /.well-known/security.txt, status: 403}
+  - {path: /.well-known/openid-configuration, status: 403}
+  - {path: /.well-known/oauth-authorization-server, status: 403}
+  - {path: /.well-known/oauth-protected-resource, status: 403}
+  - {path: /.well-known/api-catalog, status: 403}
+  - {path: /.well-known/api-catalog.json, status: 403}
+  - {path: /.well-known/ai-plugin.json, status: 403}
+  - {path: /.well-known/ucp.json, status: 403}
+  - {path: /.well-known/acp.json, status: 403}
+  - {path: /.well-known/aauth-resource.json, status: 403}
+  - {path: /.well-known/apis.json, status: 403}
+  - {path: /apis.json, status: 403}
+  - {path: /apis.yml, status: 403}
+  - {path: /llms.txt, status: 200, note: REAL text/plain llms.txt (1,367 bytes) - saved to llms/aureliusagent-dev-llms.txt}
+  - {path: /.well-known/mpp.json, status: 200, note: REAL MPP discovery document - saved as aureliusagent-dev-mpp.json (not on the scored list)}
+  - {path: /.well-known/agent-card.json, status: 200, note: REAL agent card, rpc variant - see a2a/}
+  - {path: /.well-known/agent.json, status: 200, note: REAL agent card, identical to the rpc canonical copy}
+- host: https://mpp.openmodel.sh
+  role: OpenAPI servers[] host for the Wundership MPP API
+  path_echo_control: passed (403 origin-not-allowed shape on unknown routes)
+  documents:
+  - {path: /.well-known/security.txt, status: 403}
+  - {path: /.well-known/openid-configuration, status: 403}
+  - {path: /.well-known/oauth-authorization-server, status: 403}
+  - {path: /.well-known/oauth-protected-resource, status: 403}
+  - {path: /.well-known/api-catalog, status: 403}
+  - {path: /.well-known/ai-plugin.json, status: 403}
+  - {path: /.well-known/ucp.json, status: 403}
+  - {path: /.well-known/acp.json, status: 403}
+  - {path: /.well-known/aauth-resource.json, status: 403}
+  - {path: /.well-known/apis.json, status: 403}
+  - {path: /apis.json, status: 403}
+  - {path: /apis.yml, status: 403}
+  - {path: /llms.txt, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/mpp.json, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/agent-card.json, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/agent.json, status: 200, note: identical to the rpc host copy}
+- host: https://api.wundership.com
+  role: base URL named on https://wundercorp.co/agents/ (serves the same origin; discovery docs also under /api/)
+  path_echo_control: passed (403 origin-not-allowed shape on unknown routes)
+  documents:
+  - {path: /.well-known/security.txt, status: 403}
+  - {path: /.well-known/openid-configuration, status: 403}
+  - {path: /.well-known/oauth-authorization-server, status: 403}
+  - {path: /.well-known/oauth-protected-resource, status: 403}
+  - {path: /.well-known/api-catalog, status: 403}
+  - {path: /.well-known/ai-plugin.json, status: 403}
+  - {path: /.well-known/ucp.json, status: 403}
+  - {path: /.well-known/acp.json, status: 403}
+  - {path: /.well-known/aauth-resource.json, status: 403}
+  - {path: /.well-known/apis.json, status: 403}
+  - {path: /apis.json, status: 403}
+  - {path: /apis.yml, status: 403}
+  - {path: /llms.txt, status: 200, note: identical to the rpc host copy (also at /api/llms.txt)}
+  - {path: /.well-known/agent-card.json, status: 200, note: identical to the rpc host copy (also at /api/.well-known/agent-card.json)}
+  - {path: /.well-known/agent.json, status: 200, note: identical to the rpc host copy}
+- host: https://api.walton.bot
+  role: OpenAPI servers[] host for the Walton Capacity MPP API
+  path_echo_control: passed (403 origin-not-allowed shape on unknown routes)
+  documents:
+  - {path: /.well-known/security.txt, status: 403}
+  - {path: /.well-known/openid-configuration, status: 403}
+  - {path: /.well-known/oauth-authorization-server, status: 403}
+  - {path: /.well-known/oauth-protected-resource, status: 403}
+  - {path: /.well-known/api-catalog, status: 403}
+  - {path: /.well-known/ai-plugin.json, status: 403}
+  - {path: /.well-known/ucp.json, status: 403}
+  - {path: /.well-known/acp.json, status: 403}
+  - {path: /.well-known/aauth-resource.json, status: 403}
+  - {path: /.well-known/apis.json, status: 403}
+  - {path: /apis.json, status: 403}
+  - {path: /apis.yml, status: 403}
+  - {path: /llms.txt, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/mpp.json, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/agent-card.json, status: 200, note: identical to the rpc host copy}
+  - {path: /.well-known/agent.json, status: 200, note: identical to the rpc host copy}
+- host: https://wundercorp.co
+  role: company website and docs host (https://wundercorp.co/agents/)
+  path_echo_control: failed (SPA catch-all; every unknown path returns the 3,214-byte shell with HTTP 200)
+  documents:
+  - {path: /.well-known/security.txt, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/openid-configuration, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-authorization-server, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-protected-resource, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/api-catalog, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ai-plugin.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ucp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/acp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/aauth-resource.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.yml, status: 200, note: SPA shell - miss}
+  - {path: /llms.txt, status: 200, note: REAL text/plain company llms.txt (2,505 bytes) - saved to llms/aureliusagent-dev-wundercorp-llms.txt}
+  - {path: /robots.txt, status: 200, note: 'REAL text/plain: Allow / plus Sitemap https://wundercorp.co/sitemap.xml'}
+  - {path: /.well-known/agent-card.json, status: 200, note: SPA shell - not a card}
+  - {path: /.well-known/agent.json, status: 200, note: SPA shell - not a card}
+- host: https://www.wundercorp.co
+  role: www variant
+  documents: []
+  note: serves the same SPA as the apex (no redirect); not a distinct surface
+- host: https://builderstudio.dev
+  role: product site for BuilderStudio (SPA; www 302s to the apex)
+  path_echo_control: failed (SPA catch-all; every unknown path returns the 49,228-byte app shell with HTTP 200)
+  documents:
+  - {path: /.well-known/security.txt, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/openid-configuration, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-authorization-server, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/oauth-protected-resource, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/api-catalog, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ai-plugin.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/ucp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/acp.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/aauth-resource.json, status: 200, note: SPA shell - miss}
+  - {path: /.well-known/apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.json, status: 200, note: SPA shell - miss}
+  - {path: /apis.yml, status: 200, note: SPA shell - miss}
+  - {path: /llms.txt, status: 200, note: REAL text/plain product llms.txt (6,419 bytes) - saved to llms/aureliusagent-dev-builderstudio-llms.txt}
+  - {path: /robots.txt, status: 200, note: 'REAL text/plain: disallows /api/, /admin/, /account/, /apps/, /auth/, /marketplace/, /settings, /subscription'}
+  - {path: /.well-known/agent-card.json, status: 200, note: SPA shell - not a card}
+  - {path: /.well-known/agent.json, status: 200, note: SPA shell - not a card}
+mcp_host_note: >-
+  No MCP server host exists for this provider (mcp/aureliusagent-dev-mcp.yml is a derived candidate with
+  deployment.mode none), so there is no mcp.<domain> host to probe for RFC 9728 protected-resource metadata.
+authorization_servers_note: >-
+  No fetched discovery document names an authorization server; the only credential surfaces are the MPP
+  Payment challenge (WWW-Authenticate: Payment ... realm="mpp.openmodel.sh") and the X-Capacity-Access-Token
+  issued after a paid capacity session, neither of which is OAuth.

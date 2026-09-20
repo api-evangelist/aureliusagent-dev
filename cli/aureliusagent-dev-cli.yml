@@ -1,0 +1,90 @@
+generated: '2026-09-19'
+method: searched
+source: https://www.npmjs.com/package/@wundercorp/argent
+sources:
+- https://registry.npmjs.org/@wundercorp%2Fargent (README and metadata)
+- https://registry.npmjs.org/@wundercorp%2Fbs (README and metadata)
+- https://builderstudio.dev/llms.txt (bs command groups)
+- https://wundercorp.co/products/argent/
+- https://wundercorp.co/products/cli/
+description: >-
+  Two first-party command-line tools touch this profile. ArgentShell (@wundercorp/argent) is WunderCorp's
+  own client for the Wundership MPP API: it discovers the paid endpoints from the same documents this repo
+  harvested (llms.txt, .well-known/mpp.json, machine-payments.json, agent-card.json, openapi.json,
+  openapi-agent.json, agent-products.json, /agents), sends unpaid requests, asserts the HTTP 402 challenge,
+  optionally runs a verified paid flow and exports a Postman collection. The headless BuilderStudio CLI
+  (@wundercorp/bs) is the developer-side tool of the product Aurelius orchestrates. The binaries live in
+  packages/aureliusagent-dev-packages.yml.
+clis:
+- name: argent
+  package: '@wundercorp/argent'
+  version: 0.1.0
+  published: '2026-06-24'
+  license: MIT
+  homepage: https://argent.sh
+  binaries: [argent, wundercorp-argent, mpp-test, argent-mpp]
+  install:
+  - npm install -g @wundercorp/argent
+  - npx @wundercorp/argent https://api.wundership.com --endpoint /mpp/plan
+  quick_start: argent https://api.wundership.com
+  targets_this_api: true
+  discovery_urls_checked: [/llms.txt, /.well-known/mpp.json, /machine-payments.json, /.well-known/agent-card.json, /openapi.json, /openapi-agent.json, /agent-products.json, /agents]
+  checks:
+  - Fetches common agent and MPP discovery documents
+  - Extracts paid endpoints from JSON manifests, OpenAPI paths, llms.txt and agent cards
+  - Sends an unpaid request to each endpoint and expects 402 Payment Required by default
+  - Checks for payment-challenge evidence in headers or response body
+  - Optionally sends a paid or verified request using payment headers
+  - Optionally writes a Postman collection (unpaid challenge + paid verified requests)
+  options:
+    core: ['--endpoint <path-or-url>', '--method <method>', '--body <json>', '--body-file <path>', '--header "Name: value"', '--timeout <ms>', '--expect-unpaid-status <status>', '--fail-fast', '--max-endpoints <n>']
+    paid_flow: ['--paid', '--payment-secret <secret>', '--payment-secret-env <name> (default MPP_PAYMENT_SECRET)', '--paid-header "Name: value"', '--expect-paid-status <status>']
+    output: ['--postman <path>', '--json', '--no-banner', '--no-color', '--verbose', '--dry-run', '--version', '--help']
+  verified_flow_headers: [X-Wundership-Agent-Payment-Verified, X-Wundership-Agent-Payment-Secret, X-Wundership-Agent-Payment-Receipt]
+  key_flows:
+  - name: Unpaid 402 smoke test
+    command: argent https://api.wundership.com --endpoint /mpp/plan --body '{"prompt":"Build a booking app for mobile mechanics"}'
+    expected: PASS unpaid /mpp/plan status=402 expected=402
+    note: The README still targets the deprecated /mpp/plan path; the successor is /v1/plan (lifecycle/aureliusagent-dev-lifecycle.yml).
+  - name: Verified paid flow (operator secret)
+    command: MPP_PAYMENT_SECRET=... argent https://api.wundership.com --endpoint /mpp/plan --paid
+    expected: PASS paid /mpp/plan status=200 expected=200
+  - name: Postman export
+    command: argent https://api.wundership.com --endpoint /mpp/plan --postman ./wundership-mpp.postman_collection.json
+  - name: CI JSON output
+    command: argent https://api.wundership.com --endpoint /mpp/plan --json
+    exit_codes: {0: pass, 1: fail}
+- name: bs
+  package: '@wundercorp/bs'
+  version: 0.3.34
+  published: '2026-08-26'
+  license: Apache-2.0
+  binaries: [bs]
+  install:
+  - npm install -g @wundercorp/bs
+  quick_start: bs init
+  targets_this_api: false
+  note: >-
+    Headless BuilderStudio CLI; starts the local BuilderStudio daemon that enforces policy for Aurelius and
+    Hermes runtimes. Ships a compressed release loader rather than readable source (its own README says so).
+  command_groups:
+    lifecycle: [init, start, stop, restart, status, docs]
+    models: [model current, model list, model use, model setup]
+    agents: [ask, gain, plan, session, swarm run, agent capabilities, agent runtimes, agent run, agent permissions approve, operate]
+    runtime: [repair, runtime doctor, runtime start, runtime stop, runtime update, runtime reset, ports list, ports stop]
+    workspace: [workspace open, workspace analyze, workspace root, workspace create, workspace reset, workspace detect, file read, file write, file patch, file mkdir, file rename, file delete]
+    scm: [term, git status, git diff, github login, github repos, github import]
+    deploy: [deploy, deploy preflight, deploy pack, deploy providers, deploy generate, deploy apply, deploy destroy, deploy runs]
+    backend: [backend status, backend create, backend start, backend stop, backend query, backend schema, backend rows]
+    workflow: [workflow list, workflow create, workflow compile, workflow run, workflow continue, kanban generate, kanban show]
+    extensions: [mcp list, mcp install, mcp inspect, plugin list, plugin install, skills list, skills install]
+    misc: [web status, web request, openrouter chat, hermes status, lab search, sigi policies, connector execute, desktop handoff, api, avm, link, interop install all, telemetry enable]
+- name: om
+  package: '@wundercorp/openmodel'
+  version: 0.1.20
+  published: '2026-07-26'
+  license: Apache-2.0
+  binaries: [om]
+  install: [npm install -g @wundercorp/openmodel]
+  targets_this_api: false
+  note: Local OpenModel runtime CLI (download, run, serve local models through an OpenAI-/Ollama-compatible gateway); the hosted gateway in the Wundership spec is the same product line, not a target of this CLI.

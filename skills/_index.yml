@@ -1,0 +1,25 @@
+generated: '2026-09-19'
+method: generated
+source: >-
+  Packaged Agent Skills generated from the two harvested OpenAPI contracts and the provider's own
+  discovery documents (/.well-known/mpp.json, agent-products.json, llms.txt). Every Wundership step is
+  grounded in an operationId verified verbatim in ../openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml;
+  the Walton skill is grounded in method + path because that spec declares no operationIds (the overlay
+  assigns names, which the skill cites as such). Cross-cutting rules cite ../conventions/, ../errors/,
+  ../authentication/ and ../plans/. Searched first for provider-published skills: the wundercorp GitHub org
+  publishes many *-skill repos and skills.sh/wundercorp lists them, but they are BuilderStudio design and
+  engineering skills, not skills for calling these APIs, so nothing was saved verbatim.
+skills:
+- file: aureliusagent-dev-buy-an-app-plan.md
+  name: Buy a Wundership app plan through an MPP 402 challenge
+  api: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
+  operations: [postWundershipPlan, postBuilderPreview]
+- file: aureliusagent-dev-call-the-inference-gateway.md
+  name: Call the OpenModel MPP inference gateway
+  api: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
+  operations: [getMppInferenceCapabilities, getMppInferenceProviders, getMppInferenceModels, postMppChatCompletions, postMppMessages, relayMppProviderRequest]
+- file: aureliusagent-dev-reserve-capacity.md
+  name: Quote, pay for and hand off a capacity session
+  api: openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml
+  operations: []
+  paths: ['GET /mpp/capacity/offers', 'POST /mpp/capacity/quotes', 'POST /mpp/capacity/sessions', 'GET /mpp/capacity/sessions/{sessionId}', 'POST /mpp/capacity/sessions/{sessionId}/peering-profile', 'POST /mpp/capacity/sessions/{sessionId}/connection-confirmed', 'POST /mpp/capacity/sessions/{sessionId}/cancel']

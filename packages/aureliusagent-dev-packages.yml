@@ -1,0 +1,116 @@
+generated: '2026-09-19'
+method: searched
+source:
+- https://registry.npmjs.org/-/v1/search?text=wundercorp
+- https://registry.npmjs.org/@wundercorp%2Fargent
+- https://registry.npmjs.org/@wundercorp%2Fopenmodel
+- https://registry.npmjs.org/@wundercorp%2Fopenmodel-gateway-sdk
+- https://registry.npmjs.org/@wundercorp%2Fbs
+- https://ghcr.io/v2/wundercorp/aurelius-agent/tags/list
+- https://github.com/wundercorp/awesome-wundercorp
+description: >-
+  First-party WunderCorp packages that touch the surfaces this repo profiles: the Aurelius Agent container
+  image (the only distribution of the A2A agent itself), the ArgentShell MPP test harness (the provider's
+  own client tooling for the Wundership 402 flow), the OpenModel gateway runtime and its authoring
+  contract (the MPP inference gateway is "OpenModel MPP Gateway"), and the headless BuilderStudio CLI that
+  consumes Aurelius. Versions and dates are read from the registry metadata endpoints on 2026-09-19. All
+  are published by the npm user "builderstudio" under the @wundercorp scope or by the wundercorp GitHub
+  org. NONE is a client SDK for the Wundership or Walton APIs: no SDKs pointer is emitted. Searched and
+  absent: PyPI (aurelius-agent, builderstudio, wundercorp, openmodel-mpp, hermes-tempo-pay all 404),
+  Maven Central, NuGet, RubyGems, Packagist, crates.io and pkg.go.dev (no @wundercorp / wundercorp
+  artifacts). The wundercorp GitHub org (33 public repos) publishes no .proto, no WSDL and no SDK repo;
+  hermes-tempo-pay (a Hermes Agent plugin for payment-aware HTTP 402/MPP requests, Python) exists only as
+  a GitHub repo with no registry release.
+packages:
+- language: container
+  registry: ghcr
+  name: ghcr.io/wundercorp/aurelius-agent
+  url: https://github.com/orgs/wundercorp/packages/container/package/aurelius-agent
+  install: docker pull ghcr.io/wundercorp/aurelius-agent:0.4.3
+  official: true
+  version: 0.4.3
+  published: '2026-06-07'
+  note: >-
+    The Aurelius Agent runtime itself (node dist/index.js, default command "describe", arm64). Tags 0.3.7
+    (2026-06-05), 0.3.9 (2026-06-05), 0.4.1, 0.4.2 and 0.4.3 (2026-06-07); latest == 0.4.3 by config
+    digest. The agent card served on aureliusagent.dev declares runtimeVersion 0.4.3, matching the image.
+    aureliusagent.dev tells operators to "Pull the published GHCR image directly, inspect the runtime
+    description, run smoke checks, and verify the public A2A Agent Card before wiring it into
+    BuilderStudio". No source repository for the image is public in the wundercorp org.
+- language: javascript
+  registry: npm
+  name: '@wundercorp/argent'
+  url: https://www.npmjs.com/package/@wundercorp/argent
+  source: https://github.com/wundercorp/argent
+  homepage: https://argent.sh
+  install: npm install -g @wundercorp/argent
+  official: true
+  license: MIT
+  version: 0.1.0
+  published: '2026-06-24'
+  bins: [argent, wundercorp-argent, mpp-test, argent-mpp]
+  note: >-
+    ArgentShell: open-source CLI test harness for MPP discovery, unpaid HTTP 402 challenges, paid/verified
+    smoke tests and Postman export, whose README targets https://api.wundership.com --endpoint /mpp/plan.
+    Single release; the GitHub repo URL in package.json returned 404 for README.md on main, so the npm
+    README is the reference (cli/aureliusagent-dev-cli.yml).
+- language: javascript
+  registry: npm
+  name: '@wundercorp/openmodel'
+  url: https://www.npmjs.com/package/@wundercorp/openmodel
+  source: https://github.com/wundercorp/openmodel
+  homepage: https://openmodel.sh
+  install: npm install -g @wundercorp/openmodel
+  official: true
+  license: Apache-2.0
+  version: 0.1.20
+  published: '2026-07-26'
+  bins: [om]
+  note: >-
+    Gateway-first local model runtime and CLI with OpenAI- and Ollama-compatible APIs. The hosted
+    inference gateway in the Wundership spec identifies itself as "OpenModel MPP Gateway" (GET
+    /v1/capabilities); this package is the self-hosted runtime of the same product line, not a client for
+    the hosted API.
+- language: javascript
+  registry: npm
+  name: '@wundercorp/openmodel-gateway-sdk'
+  url: https://www.npmjs.com/package/@wundercorp/openmodel-gateway-sdk
+  install: npm install @wundercorp/openmodel-gateway-sdk
+  official: true
+  license: Apache-2.0
+  version: 0.1.1
+  published: '2026-07-11'
+  note: '"Stable gateway authoring contract for OpenModel" - an SDK for building OpenModel gateways, not for calling the Wundership API.'
+- language: javascript
+  registry: npm
+  name: '@wundercorp/bs'
+  url: https://www.npmjs.com/package/@wundercorp/bs
+  install: npm install -g @wundercorp/bs
+  official: true
+  license: Apache-2.0
+  version: 0.3.34
+  published: '2026-08-26'
+  bins: [bs]
+  note: >-
+    Headless BuilderStudio CLI (bs init / ask / gain / plan / swarm run / deploy / mcp / api ...). The
+    BuilderStudio daemon is the policy layer Aurelius orchestrates through; the package ships a compressed
+    release loader rather than readable source. Recorded because builderstudio.dev/llms.txt names it the
+    canonical CLI for the product Aurelius serves.
+- language: python
+  registry: github
+  name: hermes-tempo-pay
+  url: https://github.com/wundercorp/hermes-tempo-pay
+  official: true
+  version: null
+  published: null
+  note: >-
+    Hermes Agent plugin for Tempo Wallet onboarding and payment-aware HTTP 402/MPP requests - the
+    worker-side counterpart to the Aurelius orchestrator. Not on PyPI (404 on 2026-09-19) and the repo
+    has no GitHub release, so there is no dated version to record; last push 2026-08-27 per the GitHub API.
+registry_checks:
+- {registry: npm, query: 'https://registry.npmjs.org/-/v1/search?text=wundercorp', status: 200, first_party_hits: 10}
+- {registry: npm, query: 'https://registry.npmjs.org/-/v1/search?text=aurelius-agent', status: 200, first_party_hits: 0}
+- {registry: pypi, query: 'https://pypi.org/pypi/aurelius-agent/json', status: 404}
+- {registry: pypi, query: 'https://pypi.org/pypi/hermes-tempo-pay/json', status: 404}
+- {registry: ghcr, query: 'https://ghcr.io/v2/wundercorp/aurelius-agent/tags/list', status: 200, tags: 6}
+- {registry: github, query: 'https://api.github.com/orgs/wundercorp/repos', status: 200, public_repos: 33}

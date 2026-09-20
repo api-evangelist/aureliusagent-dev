@@ -1,0 +1,105 @@
+generated: '2026-09-19'
+method: probed
+source: https://aureliusagent.dev/.well-known/agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: aureliusagent.dev
+  legacy_path_also_served: /.well-known/agent.json
+  also_served_on:
+  - host: rpc.aureliusagent.dev
+    url: https://rpc.aureliusagent.dev/.well-known/agent-card.json
+    note: >-
+      The card's own metadata names this the publicAgentCardUrl. It is a DIFFERENT document from the
+      website copy (5,867 bytes vs 3,679): version 0.4.0 rather than 0.4.3, plus a non-standard top-level
+      payment block and a metadata.agentCommerce block that point at the Wundership MPP endpoints. Saved
+      verbatim as aureliusagent-dev-agent-card-rpc.json.
+  - host: mpp.openmodel.sh
+    url: https://mpp.openmodel.sh/.well-known/agent-card.json
+    note: byte-identical to the rpc copy
+  - host: api.wundership.com
+    url: https://api.wundership.com/.well-known/agent-card.json
+    note: byte-identical to the rpc copy; also at /api/.well-known/agent-card.json
+  - host: api.walton.bot
+    url: https://api.walton.bot/.well-known/agent-card.json
+    note: byte-identical to the rpc copy
+  not_served_on:
+  - host: wundercorp.co
+    status: 200
+    note: SPA shell (text/html, 3,214 bytes) for every /.well-known/* path - not a card
+  - host: builderstudio.dev
+    status: 200
+    note: SPA shell (text/html, 49,228 bytes) for every /.well-known/* path - not a card
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: 0.3.0
+  preferred_transport: JSONRPC
+  checks:
+    capabilities_is_object: true
+    protocolVersion_present: true
+    skills_is_array: true
+    preferredTransport_present: true
+    defaultInputModes_present: true
+    defaultOutputModes_present: true
+    additionalInterfaces_present: true
+  deviations:
+  - version-skew-between-hosts (website card 0.4.3, rpc/mpp/wundership/walton copies 0.4.0)
+  - non-standard-top-level-payment-block-on-rpc-copy
+  - securitySchemes-empty-and-security-empty (anonymous endpoint; not a spec failure)
+  - supportsAuthenticatedExtendedCard false and agent/getAuthenticatedExtendedCard returns -32601
+card:
+  name: Aurelius Agent
+  url: https://rpc.aureliusagent.dev/a2a
+  version: 0.4.3
+  provider:
+    organization: wundercorp
+    url: https://aureliusagent.dev/
+  documentationUrl: https://aureliusagent.dev/
+  skills: 3
+  skill_ids: [strategic-planning, implementation-coordination, build-smoke-release-flow]
+  capabilities: {streaming: false, pushNotifications: false, stateTransitionHistory: false}
+  input_modes: [text/plain, application/json]
+  output_modes: [text/plain, application/json]
+  file: aureliusagent-dev-agent-card.json
+  rpc_copy_file: aureliusagent-dev-agent-card-rpc.json
+  metadata:
+    runtimeId: aurelius-agent
+    connectorPolicy: draft-only-by-default
+    deploymentBaseUrl: https://rpc.aureliusagent.dev
+    container_image: ghcr.io/wundercorp/aurelius-agent (tags 0.3.7, 0.3.9, 0.4.1, 0.4.2, 0.4.3, latest)
+endpoint_probe:
+  url: https://rpc.aureliusagent.dev/a2a
+  transport: JSON-RPC 2.0 over HTTPS POST
+  get_status: 401 (empty body; the endpoint is POST-only)
+  methods_observed:
+  - {method: tasks/get, result: 'error -32001 Task not found', http_status: 200, note: implemented; no credentials required}
+  - {method: tasks/cancel, result: 'error -32001 Task not found', http_status: 200, note: implemented; no credentials required}
+  - {method: message/stream, result: 'error -32601 Method not found', http_status: 200}
+  - {method: tasks/resubscribe, result: 'error -32601 Method not found', http_status: 200}
+  - {method: tasks/pushNotificationConfig/get, result: 'error -32601 Method not found', http_status: 200}
+  - {method: agent/getAuthenticatedExtendedCard, result: 'error -32601 Method not found', http_status: 200}
+  - {method: tools/list, result: 'error -32601 Method not found', http_status: 200, note: not an MCP endpoint}
+  - {method: '(malformed JSON)', result: 'error -32700 Parse error', http_status: 200}
+  message_send: >-
+    Not invoked. agent-products.json maps the paid "Wundership app plan" product to forwardPath /a2a, so a
+    message/send would exercise the provider's planning runtime; liveness was established with tasks/get
+    and tasks/cancel instead.
+  cors: 'OPTIONS /a2a answers any Origin with access-control-allow-origin echoed, credentials true, max-age 3600'
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://aureliusagent.dev/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  content_length: 3679
+  last_modified: 'Sat, 13 Jun 2026 08:31:33 GMT'
+  cache_control: public, max-age=31536000, immutable
+  server: AmazonS3 via CloudFront
+  legacy_url: https://aureliusagent.dev/.well-known/agent.json
+  legacy_http_status: 200
+  legacy_identical: true
+  rpc_url: https://rpc.aureliusagent.dev/.well-known/agent-card.json
+  rpc_http_status: 200
+  rpc_content_type: application/json
+  rpc_content_length: 5867
+  registry_listing: https://a2aregistry.org (harvest source; 415 agents fetched 2026-09-19)

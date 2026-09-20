@@ -1,0 +1,38 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Response headers observed on 2026-09-19 on https://mpp.openmodel.sh (GET /openapi.json, GET
+  /v1/capabilities, unpaid POST /v1/plan -> 402, unpaid POST /v1/chat/completions -> 402), on
+  https://rpc.aureliusagent.dev/a2a (JSON-RPC tasks/get, tasks/cancel, malformed body) and on
+  https://api.walton.bot/mpp/capacity/offers; plus a text search of both OpenAPI documents and
+  https://wundercorp.co/agents/ for "rate limit".
+limit_count: 0
+description: >-
+  WunderCorp publishes no rate limits for the Aurelius A2A endpoint, the Wundership MPP API or the Walton
+  Capacity API, and no rate-limit header appears on any probed response. The OpenAPI documents contain no
+  occurrence of "rate limit"; the docs page mentions only "higher quotas" as a benefit of the (403-gated)
+  API-key programme. This is an honest zero measured from live responses. The only throttling-adjacent
+  signal is economic: every paid route answers HTTP 402 with a per-request price until paid, so an
+  unpaid client is stopped by the payment challenge rather than by a quota.
+limits: []
+response_headers:
+  observed: []
+  checked_for: [RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, RateLimit-Policy, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After]
+  note: >-
+    None appeared. The headers the origin does expose through CORS (access-control-expose-headers on
+    OPTIONS /a2a) are payment- and lifecycle-related - Payment-Receipt, WWW-Authenticate,
+    Authentication-Info, Deprecation, Sunset, X-OpenModel-Deprecated-Path, X-OpenModel-Successor-Path,
+    X-Wundership-Agent-Price, X-Wundership-Agent-Payment-Required - and none is a rate-limit signal.
+exhaustion_status: null
+enforcement:
+  documented: false
+  inferred: AWS ALB origin (AWSALB cookies) behind CloudFront for the static sites; any edge throttling is undocumented and unsignalled.
+x-evidence:
+  fetched: '2026-09-19'
+  probes:
+  - {url: 'https://mpp.openmodel.sh/v1/plan', method: 'POST (unpaid)', status: 402, rate_limit_headers: none}
+  - {url: 'https://mpp.openmodel.sh/v1/chat/completions', method: 'POST (unpaid)', status: 402, rate_limit_headers: none}
+  - {url: 'https://mpp.openmodel.sh/v1/capabilities', method: GET, status: 200, rate_limit_headers: none}
+  - {url: 'https://mpp.openmodel.sh/openapi.json', method: GET, status: 200, rate_limit_headers: none}
+  - {url: 'https://rpc.aureliusagent.dev/a2a', method: 'POST tasks/get', status: 200, rate_limit_headers: none}
+  - {url: 'https://api.walton.bot/mpp/capacity/offers', method: GET, status: 200, rate_limit_headers: none}

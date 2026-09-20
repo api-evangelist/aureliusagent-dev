@@ -1,0 +1,62 @@
+generated: '2026-09-19'
+method: probed
+source: https://ghcr.io/v2/wundercorp/aurelius-agent/tags/list
+sources:
+- https://ghcr.io/v2/wundercorp/aurelius-agent/tags/list (tags) and each tag's image config blob (created timestamps)
+- https://aureliusagent.dev/.well-known/agent-card.json (version 0.4.3, Last-Modified Sat, 13 Jun 2026 08:31:33 GMT)
+- https://rpc.aureliusagent.dev/.well-known/agent-card.json (version 0.4.0)
+- openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (info.version 2026-07-15; deprecated legacy routes)
+- https://registry.npmjs.org/@wundercorp%2Fargent, @wundercorp%2Fopenmodel, @wundercorp%2Fbs (package release dates)
+description: >-
+  WunderCorp publishes no human changelog or release notes for the Aurelius Agent, the Wundership MPP API
+  or the Walton Capacity API (no /changelog, /releases or GitHub Releases page; the wundercorp org has no
+  aurelius-agent source repo). What IS published and dated is the container registry: every runtime
+  version is a ghcr.io tag with a build timestamp in its image config, and the agent card and OpenAPI carry
+  versions of their own. The entries below are read from those machine sources, so the scheme is honest
+  but coarse - a version and a date, with no per-release notes. The API's date-based version and the
+  deprecation of the /mpp/* generation are the only API-level changes evidenced.
+scheme: semver container tags (Aurelius Agent); date-based info.version (Wundership MPP API); semver (Walton Capacity 4.0.0)
+current_version:
+  aurelius_agent: 0.4.3
+  wundership_mpp_api: '2026-07-15'
+  walton_capacity_mpp_api: 4.0.0
+  mpp_discovery_schema: '2026-07-22'
+entries:
+- version: 'Wundership MPP API 2026-07-15'
+  date: '2026-07-15'
+  breaking: false
+  additions: [unified OpenModel MPP inference gateway under /v1 (chat/completions, responses, messages, embeddings, images/generations, audio/*, moderations, provider relay), /v1 successor routes for the five paid products]
+  deprecations: [/mpp/plan, /mpp/aurelius/plan, /mpp/builder/preview, /mpp/images/generate, /mpp/listings/from-image, /mpp/chat/completions, /mpp/openmodel/pricing/estimate - each marked deprecated with x-successor-path]
+  highlights: 'info.version is the only date on the API itself; the deprecated routes returned HTTP 500 when probed on 2026-09-19.'
+  source: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
+- version: 'Aurelius Agent 0.4.3'
+  date: '2026-06-07'
+  breaking: unknown
+  highlights: 'ghcr.io/wundercorp/aurelius-agent:0.4.3 built 2026-06-07T20:05Z; latest points here. The website agent card (Last-Modified 2026-06-13) declares this version.'
+  source: https://ghcr.io/v2/wundercorp/aurelius-agent/manifests/0.4.3
+- version: 'Aurelius Agent 0.4.2'
+  date: '2026-06-07'
+  breaking: unknown
+  highlights: built 2026-06-07T18:59Z
+- version: 'Aurelius Agent 0.4.1'
+  date: '2026-06-07'
+  breaking: unknown
+  highlights: built 2026-06-07T16:45Z
+- version: 'Aurelius Agent 0.4.0'
+  date: null
+  breaking: unknown
+  highlights: 'No 0.4.0 image tag exists, yet the card served by the runtime at rpc.aureliusagent.dev (and mpp.openmodel.sh, api.wundership.com, api.walton.bot) declares version/runtimeVersion 0.4.0 with runtimeMode "embedded-api" - the API-embedded runtime is on a different build from the container line.'
+  source: https://rpc.aureliusagent.dev/.well-known/agent-card.json
+- version: 'Aurelius Agent 0.3.9'
+  date: '2026-06-05'
+  breaking: unknown
+  highlights: 'built 2026-06-05T12:17Z; the version third-party directories (awesome-a2a lists) cite as ghcr.io/wundercorp/aurelius-agent:0.3.9'
+- version: 'Aurelius Agent 0.3.7'
+  date: '2026-06-05'
+  breaking: unknown
+  highlights: built 2026-06-05T11:58Z; oldest tag in the registry
+related_package_releases:
+- {package: '@wundercorp/bs', version: 0.3.34, date: '2026-08-26'}
+- {package: '@wundercorp/openmodel', version: 0.1.20, date: '2026-07-26'}
+- {package: '@wundercorp/argent', version: 0.1.0, date: '2026-06-24'}
+recent_window: 2026-06-05 to 2026-09-19

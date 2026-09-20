@@ -1,0 +1,77 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://wundercorp.co/privacy
+signals: {}
+note: >-
+  No horizontal regulatory signal is published on aureliusagent.dev, wundercorp.co, builderstudio.dev or
+  any API host. WunderCorp does publish a Terms document (https://wundercorp.co/assets/terms.pdf, 229 KB)
+  and a Privacy Policy (https://wundercorp.co/assets/privacy.pdf, 154 KB), both rendered at /terms and
+  /privacy by the wundercorp.co SPA and labelled in the page bundle "Version 1.2 · Last updated September
+  10, 2026" with a covered-products list (builderstudio.dev, doku.sh, telemio.sh, guardianbrowser.sh,
+  agentvm.sh, x402mpp.sh); those are wired as TermsOfService / PrivacyPolicy pointers in apis.yml. The
+  PDFs were not parsed for GPC, data-subject-request or subprocessor statements, so no signal is set from
+  them - a statement inside a PDF that was not read is not evidence. Every conventional path below was
+  probed live; on the SPA hosts a 200 is the catch-all shell and is recorded as absent. An empty signals
+  map is the measurement, not a gap in the probe.
+probed_absent:
+- signal: sbom
+  urls:
+  - {url: 'https://aureliusagent.dev/security/sbom', status: 200, note: SPA shell}
+  - {url: 'https://wundercorp.co/security/sbom', status: 200, note: SPA shell}
+  - {url: 'https://rpc.aureliusagent.dev/security/sbom', status: 403, note: origin unknown-route shape}
+  note: Never derived - search only. The ghcr.io/wundercorp/aurelius-agent image carries no OCI labels and no attached SBOM/attestation was found in the manifest.
+- signal: accessibility_conformance
+  urls:
+  - {url: 'https://wundercorp.co/accessibility', status: 200, note: SPA shell}
+  - {url: 'https://builderstudio.dev/accessibility', status: 200, note: SPA shell}
+  - {url: 'https://aureliusagent.dev/accessibility', status: 200, note: SPA shell}
+  note: The wundercorp GitHub org publishes an "accessibility-skill" (guidance for building accessible UIs) which is a product, not a conformance report for its own sites.
+- signal: subprocessors
+  urls:
+  - {url: 'https://wundercorp.co/legal/subprocessors', status: 200, note: SPA shell}
+  - {url: 'https://builderstudio.dev/legal/subprocessors', status: 200, note: SPA shell}
+- signal: data_subject_request
+  urls:
+  - {url: 'https://wundercorp.co/privacy/requests', status: 200, note: SPA shell}
+  - {url: 'https://wundercorp.co/legal/dpa', status: 200, note: SPA shell}
+- signal: data_residency
+  urls:
+  - {url: 'https://wundercorp.co/docs/data-residency', status: 200, note: SPA shell}
+  note: The API origin resolves to AWS us-east-2 ALB addresses and the static sites to CloudFront; an inferred region is not a published commitment.
+- signal: incident_notification
+  urls:
+  - {url: 'https://wundercorp.co/legal/dpa', status: 200, note: SPA shell}
+- signal: ai_transparency
+  urls:
+  - {url: 'https://wundercorp.co/ai/transparency', status: 200, note: SPA shell}
+  - {url: 'https://aureliusagent.dev/ai/transparency', status: 200, note: SPA shell}
+  note: The product IS an AI agent and the docs describe what it does, but no AI transparency notice, model card or system card is published.
+- signal: training_data_summary
+  urls:
+  - {url: 'https://wundercorp.co/ai', status: 200, note: SPA shell}
+- signal: transparency_report
+  urls:
+  - {url: 'https://wundercorp.co/transparency', status: 200, note: SPA shell}
+  - {url: 'https://builderstudio.dev/transparency', status: 200, note: SPA shell}
+- signal: notice_and_action
+  urls:
+  - {url: 'https://wundercorp.co/legal/report-content', status: 200, note: SPA shell}
+- signal: global_privacy_control
+  urls:
+  - {url: 'https://wundercorp.co/privacy', status: 200, note: renders /assets/privacy.pdf client-side}
+  note: honored is not set - no published GPC statement was read, and no Sec-GPC header probe is used.
+- signal: support_lifetime
+  urls:
+  - {url: 'https://builderstudio.dev/support', status: 200, note: SPA shell}
+  note: No support period is stated for the agent runtime, the CLI packages or the API versions.
+- signal: age_assurance
+  urls:
+  - {url: 'https://wundercorp.co/terms', status: 200, note: renders /assets/terms.pdf client-side; not parsed}
+- signal: exit_assistance
+  urls:
+  - {url: 'https://wundercorp.co/terms', status: 200, note: renders /assets/terms.pdf client-side; not parsed}
+legal_documents:
+- {type: TermsOfService, page: 'https://wundercorp.co/terms', document: 'https://wundercorp.co/assets/terms.pdf', status: 200, content_type: application/pdf, version_label: 'Version 1.2 · Last updated September 10, 2026'}
+- {type: PrivacyPolicy, page: 'https://wundercorp.co/privacy', document: 'https://wundercorp.co/assets/privacy.pdf', status: 200, content_type: application/pdf, version_label: 'Version 1.2 · Last updated September 10, 2026'}
+- {type: Analytics notice, page: 'https://aureliusagent.dev/', text: 'We use privacy-friendly Umami analytics to understand aggregate site usage. It does not use cookies. You can accept analytics or continue without it.'}

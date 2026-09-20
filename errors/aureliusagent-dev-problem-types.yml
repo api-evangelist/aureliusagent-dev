@@ -1,0 +1,112 @@
+generated: '2026-09-19'
+method: derived
+source:
+- openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml (responses 200/202/400/402/500-class, components.schemas.PaymentRequired and ErrorResponse)
+- openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml (responses 200/201/402)
+- live unpaid POST https://mpp.openmodel.sh/v1/plan and /v1/chat/completions (2026-09-19)
+- live JSON-RPC probes of https://rpc.aureliusagent.dev/a2a (2026-09-19)
+description: >-
+  Error semantics for WunderCorp's three surfaces. Derived from the two OpenAPI documents and enriched with
+  the shapes actually observed on the wire; there is no human error-reference page to search
+  (wundercorp.co/agents/ documents none). The dominant "error" is not a failure at all: HTTP 402 Payment
+  Required is the designed first response of every paid route and carries the machine-payment challenge
+  an agent needs to proceed.
+format: mixed
+formats:
+- surface: Wundership fixed-price products (postWundershipPlan, postBuilderPreview, postImageGeneration, postListingFromImage, postOpenmodelPricingEstimate, deprecated /mpp/* routes)
+  media_type: application/json
+  envelope: '{error, type, status, protocols[], provider, resource, product{}, amount{}, payment{}, humanFallback{}, requestId} on 402; ''{error, message, fallback}'' (ErrorResponse) on 502'
+- surface: OpenModel MPP inference gateway (postMppChatCompletions and siblings, relayMppProviderRequest)
+  media_type: application/problem+json observed on 402; upstream provider bodies otherwise (passed through unchanged)
+  envelope: upstream provider's own error body; the gateway adds 400 (unknown provider / invalid gateway request) and 503 (gateway or provider route disabled)
+- surface: Walton Capacity MPP API
+  media_type: application/json
+  envelope: 402 "MPP payment challenge" (no body schema declared); no error schema declared for other routes
+- surface: Aurelius Agent A2A endpoint
+  media_type: application/json (JSON-RPC 2.0 error object, always HTTP 200)
+  envelope: '{jsonrpc:"2.0", id, error:{code, message}}'
+- surface: origin router (all API hosts)
+  media_type: application/json
+  envelope: '{"error":"Origin is not allowed."} with HTTP 403 for any unknown route; 401 with an empty body for GET on POST-only routes; HTTP 404 "No app is configured for this host yet." on the bare host root'
+problem_types:
+- status: 402
+  code: payment_required
+  type: machine_payment_required
+  title: Payment required (MPP challenge)
+  surfaces: [Wundership fixed-price products]
+  detail: >-
+    Returned to every unpaid call. Headers: WWW-Authenticate: Payment id="<uuid>", realm="mpp.openmodel.sh",
+    method="stripe", intent="charge", request="<base64 {amount,currency}>"; Payment-Required: true;
+    X-Wundership-Agent-Payment-Required: true; X-Wundership-Agent-Price: "1.00 USD"; Link: <resource>;
+    rel="payment". Body fields: error "payment_required", type "machine_payment_required", status 402,
+    protocols ["mpp"], provider "wundership", resource (URI), product (the agent-products.json entry incl.
+    legacyPaths/successorPath), amount {minorUnits, display, currency}, payment {message, receiptHeader
+    "X-Wundership-Agent-Payment-Receipt", verifiedHeader "X-Wundership-Agent-Payment-Verified", method
+    "machine_payment_proxy", directoryHint}, humanFallback {apiKeysPath, billingPath, description},
+    requestId (== the challenge id).
+  remediation: Satisfy the challenge through an MPP-compatible payment client or proxy (the provider names argent.sh), then retry the identical request with the MPP Authorization credential / proxy verification headers; the 200 body carries paymentVerified true and a receipt.
+  observed: {url: 'https://mpp.openmodel.sh/v1/plan', status: 402, content_type: application/json, fetched: '2026-09-19'}
+- status: 402
+  title: Upstream MPP payment required
+  surfaces: [OpenModel MPP inference gateway]
+  detail: The upstream provider's 402 challenge (WWW-Authenticate) is passed through unchanged; the gateway adds no surcharge and requires no API key.
+  remediation: Pay the upstream provider's challenge and retry the same gateway URL with the MPP Authorization credential; Authentication-Info / receipt headers are passed back unchanged.
+  observed: {url: 'https://mpp.openmodel.sh/v1/chat/completions', status: 402, content_type: application/problem+json, fetched: '2026-09-19'}
+- status: 402
+  title: MPP payment challenge (capacity session)
+  surfaces: [Walton Capacity MPP API]
+  detail: 'POST /mpp/capacity/sessions: "First request may return HTTP 402. Retry the identical request with the MPP Authorization credential." Success is 201 with Payment-Receipt and X-Capacity-Access-Token headers.'
+  remediation: Retry with the MPP Authorization credential; keep the returned X-Capacity-Access-Token for session reads, peering-profile, connection-confirmed and cancel.
+- status: 400
+  title: Unknown provider or invalid gateway request
+  surfaces: [OpenModel MPP inference gateway]
+  detail: Declared on every gateway operation; raised when the provider selected by X-OpenModel-Provider, the "provider" field or the model prefix is not one of GET /v1/providers.
+  remediation: Pick a provider id from GET /v1/providers and a model id from GET /v1/models.
+- status: 202
+  title: Upstream asynchronous operation accepted
+  surfaces: [OpenModel MPP inference gateway]
+  detail: Declared on every gateway operation for upstream providers that answer asynchronously; not an error.
+- status: 502
+  title: Paid forwarding failed
+  surfaces: [Wundership fixed-price products]
+  detail: ErrorResponse {error, message, fallback} when the paid request could not be forwarded to the fulfilling service (the app-plan product forwards to /a2a).
+  remediation: Retry later; the receipt should be retained for reconciliation. No refund path is published.
+- status: 502
+  title: Upstream MPP provider unavailable
+  surfaces: [OpenModel MPP inference gateway]
+  remediation: Retry, or select another provider via X-OpenModel-Provider.
+- status: 503
+  title: Gateway or provider route disabled
+  surfaces: [OpenModel MPP inference gateway]
+  detail: Declared on every gateway operation; GET /v1/capabilities reports enabled true/false and the operationFamilies currently served.
+- status: 500
+  title: Internal error on deprecated routes (observed, undocumented)
+  surfaces: [Wundership deprecated /mpp/* routes]
+  detail: Unpaid POST /mpp/plan on mpp.openmodel.sh and /mpp/aurelius/plan on rpc.aureliusagent.dev returned HTTP 500 with an empty body on 2026-09-19 instead of the documented 402; the successor /v1/plan behaved as documented.
+  remediation: Use the x-successor-path route.
+  observed: {url: 'https://mpp.openmodel.sh/mpp/plan', status: 500, fetched: '2026-09-19'}
+- status: 403
+  code: Origin is not allowed.
+  title: Unknown route (origin router)
+  surfaces: [origin router]
+  detail: Any path the application does not route - including /.well-known/security.txt, /openapi.yaml, /mcp, /docs - answers 403 {"error":"Origin is not allowed."} regardless of the Origin header sent. Treat as not-found.
+  observed: {url: 'https://mpp.openmodel.sh/v1/nonexistent-probe', status: 403, fetched: '2026-09-19'}
+- status: 401
+  title: Method not allowed on POST-only routes (observed)
+  surfaces: [Aurelius Agent A2A endpoint, origin router]
+  detail: GET https://rpc.aureliusagent.dev/a2a and GET https://rpc.aureliusagent.dev/ return 401 with an empty body; the A2A endpoint itself requires no credentials on POST.
+jsonrpc_errors:
+- code: -32700
+  message: Parse error
+  observed: malformed JSON body
+- code: -32601
+  message: Method not found
+  observed: [message/stream, tasks/resubscribe, tasks/pushNotificationConfig/get, agent/getAuthenticatedExtendedCard, tools/list]
+- code: -32001
+  message: Task not found
+  observed: [tasks/get, tasks/cancel with an unknown task id]
+  note: A2A-specific TaskNotFoundError code.
+request_id:
+  field: requestId (402 body)
+  header: none observed
+  note: The requestId equals the id parameter of the WWW-Authenticate Payment challenge; no X-Request-Id header is returned.

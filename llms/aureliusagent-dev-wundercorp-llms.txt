@@ -1,0 +1,24 @@
+# WunderCorp
+
+> WunderCorp builds agentic development tools, AI model runtimes, managed agent infrastructure, multi-engine search, documentation utilities, collaborative AI products, x402 discovery, machine-payment APIs, and supporting services.
+
+## Products
+
+- [ArgentShell](https://wundercorp.co/products/argent/): A terminal utility for exercising MPP endpoints, inspecting HTTP 402 challenges, and debugging machine-payment integrations.
+- [OpenModel](https://wundercorp.co/products/openmodel/): A gateway-first model runtime for downloading, running, serving, and observing local and cloud AI models.
+- [BuilderStudio CLI](https://wundercorp.co/products/cli/): The public WunderCorp command-line package for repeatable BuilderStudio development workflows and documentation generation.
+- [Doku](https://wundercorp.co/products/doku/): A documentation portal for docs.json, llms-full.txt, Doku-packed JSON, local files, and remote documentation sources.
+- [WaltonBot](https://wundercorp.co/products/walton/): Collaborative AI rooms for cowork and coplay with link, code, and QR-based participation.
+- [BuilderStudio](https://wundercorp.co/products/builderstudio/): A local-first agentic coding IDE with source editing, terminal workflows, MCP-aware tools, Skills, models, previews, packaging, and deployment handoff.
+- [WunderCorp MPP](https://wundercorp.co/products/mpp/): Payment-aware APIs for agent-discoverable software outcomes including app planning, previews, AI output, and commerce automation.
+- [x402mpp.sh](https://wundercorp.co/products/x402mpp/): An independent self-indexing x402 discovery and payment-intelligence surface for paid endpoints, facilitators, apps, networks, directories, and payment evidence. Live product: https://x402mpp.sh
+- [Guardian Browser](https://wundercorp.co/products/guardianbrowser/): Multi-engine search and browsing with explicit engine, search-mode, and safe-search controls, including deterministic agent-mode behavior. Live product: https://guardianbrowser.sh
+- [AgentVM](https://wundercorp.co/products/agentvm/): Managed Linux servers and MCP Sandboxes for agents with SSH, bounded runtime, visible maximum charge, automatic expiry, dashboard/CLI control, and machine-payment support. Live product: https://agentvm.sh
+
+## Company pages
+
+- [WunderCorp home](https://wundercorp.co/)
+- [Products](https://wundercorp.co/products/)
+- [Agent APIs](https://wundercorp.co/agents/)
+- [Terms](https://wundercorp.co/terms)
+- [Privacy](https://wundercorp.co/privacy)
