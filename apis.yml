@@ -27,6 +27,19 @@ tags:
 - Machine Payments
 - MPP
 - HTTP 402
+- Artificial Intelligence
+- Inference Gateway
+- Code Generation
+- Developer Tools
+- Compute Capacity
+- Orchestration
+tags_raw:
+- Company
+- Agents
+- A2A
+- Machine Payments
+- MPP
+- HTTP 402
 - AI
 - Inference Gateway
 - Code Generation
@@ -86,6 +99,14 @@ apis:
   humanURL: https://wundercorp.co/agents/
   baseURL: https://mpp.openmodel.sh
   tags:
+  - Machine Payments
+  - MPP
+  - HTTP 402
+  - Inference Gateway
+  - App Planning
+  - Image-Generation
+  - Commerce
+  tags_raw:
   - Machine Payments
   - MPP
   - HTTP 402
