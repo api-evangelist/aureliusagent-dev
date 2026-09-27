@@ -50,11 +50,11 @@ apis:
 - name: Aurelius Agent A2A API
   description: >-
     Agent-to-Agent (A2A 0.3.0) JSON-RPC surface for Aurelius Agent, WunderCorp's strategic planning and
-    orchestration agent for BuilderStudio. Three published skills (strategic-planning,
-    implementation-coordination, build-smoke-release-flow), text/plain and application/json modes, no
-    streaming or push notifications, anonymous access (securitySchemes is empty). The card is served on
-    the primary domain at the canonical /.well-known/agent-card.json and the legacy /.well-known/agent.json,
-    and on rpc.aureliusagent.dev, mpp.openmodel.sh, api.wundership.com and api.walton.bot.
+    orchestration agent for BuilderStudio. Three published skills (strategic-planning, implementation-coordination,
+    build-smoke-release-flow), text/plain and application/json modes, no streaming or push notifications,
+    anonymous access (securitySchemes is empty). The card is served on the primary domain at the canonical
+    /.well-known/agent-card.json and the legacy /.well-known/agent.json, and on rpc.aureliusagent.dev,
+    mpp.openmodel.sh, api.wundership.com and api.walton.bot.
   image: https://aureliusagent.dev/assets/aurelius-logo.png
   humanURL: https://aureliusagent.dev/
   baseURL: https://rpc.aureliusagent.dev/a2a
@@ -83,55 +83,24 @@ apis:
     url: rate-limits/aureliusagent-dev-rate-limits.yml
   - type: ChangeLog
     url: changelog/aureliusagent-dev-changelog.yml
-- name: Wundership MPP API
-  description: >-
-    WunderCorp's agent-payable REST API (OpenAPI 3.1.0, info.version 2026-07-15, contact WunderCorp, Inc.
-    hello@wundercorp.co). Five fixed-price machine-payment products (app plan USD 1.00, BuilderStudio
-    preview 5.00, image generation 1.00, listing from image 0.75, OpenModel pricing estimate 0.01) that
-    answer HTTP 402 with a WWW-Authenticate: Payment challenge until an MPP credential is presented, plus
-    the OpenModel MPP inference gateway: OpenAI- and Anthropic-shaped /v1/chat/completions, /v1/responses,
-    /v1/messages, /v1/embeddings, /v1/images/generations, /v1/audio/* and /v1/moderations that relay the
-    upstream provider's 402 challenge and receipt unchanged, with public /v1/models, /v1/providers and
-    /v1/capabilities discovery. Seven legacy /mpp/* routes are marked deprecated with x-successor-path.
-    The identical spec is served from mpp.openmodel.sh (servers[]), rpc.aureliusagent.dev,
-    api.wundership.com and api.walton.bot, which share one origin.
-  image: https://aureliusagent.dev/assets/aurelius-logo.png
-  humanURL: https://wundercorp.co/agents/
-  baseURL: https://mpp.openmodel.sh
+- aid: aureliusagent-dev:aureliusagent-dev-ai-generation-api
+  name: WunderCorp AI Generation API
+  description: Paid AI generation utilities.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
   tags:
-  - Machine Payments
-  - MPP
-  - HTTP 402
-  - Inference Gateway
-  - App Planning
-  - Image-Generation
-  - Commerce
-  tags_raw:
-  - Machine Payments
-  - MPP
-  - HTTP 402
-  - Inference Gateway
-  - App Planning
-  - Image Generation
-  - Commerce
+  - AI Generation
   properties:
   - type: OpenAPI
-    url: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
-  - type: OpenAPI
-    url: https://mpp.openmodel.sh/openapi.json
-    name: Provider-hosted OpenAPI (identical copies at rpc.aureliusagent.dev/openapi.json, api.wundership.com/api/openapi-agent.json)
+    url: openapi/aureliusagent-dev-ai-generation-api-openapi.yml
   - type: Documentation
     url: https://wundercorp.co/agents/
   - type: LLMsTxt
     url: llms/aureliusagent-dev-llms.txt
-  - type: Overlay
-    url: overlays/aureliusagent-dev-wundership-mpp-api-overlay.yaml
   - type: Plans
     url: plans/aureliusagent-dev-plans-pricing.yml
   - type: Pricing
     url: https://wundercorp.co/agents/
-  - type: MCPServer
-    url: mcp/aureliusagent-dev-mcp.yml
   - type: Authentication
     url: authentication/aureliusagent-dev-authentication.yml
   - type: Conventions
@@ -148,47 +117,297 @@ apis:
     url: rate-limits/aureliusagent-dev-rate-limits.yml
   - type: DataModel
     url: data-model/aureliusagent-dev-data-model.yml
-  - type: AgentSkill
-    url: skills/_index.yml
   - type: CLI
     url: cli/aureliusagent-dev-cli.yml
-- name: Walton Capacity MPP API
-  description: >-
-    Walton capacity marketplace (OpenAPI 3.1.0, version 4.0.0, servers[] https://api.walton.bot): buy and
-    sell GPU capacity, hosted model inference, edge compute, shared workspaces, service-robot time and 3D
-    printer jobs through the Machine Payments Protocol. Offers and quotes are free; POST
-    /mpp/capacity/sessions returns HTTP 402, accepts an MPP Authorization credential on retry and returns
-    Payment-Receipt plus an X-Capacity-Access-Token that authorizes session reads, peering-profile updates,
-    connection confirmation and cancellation. Provider-side listing and peering-offer routes are bearer
-    protected. Named by WunderCorp's /.well-known/mpp.json as capacityOpenapi and served identically from
-    api.walton.bot, mpp.openmodel.sh and rpc.aureliusagent.dev. The spec declares no operationIds.
-  image: https://aureliusagent.dev/assets/aurelius-logo.png
-  humanURL: https://wundercorp.co/agents/
-  baseURL: https://api.walton.bot
+- aid: aureliusagent-dev:aureliusagent-dev-app-planning-api
+  name: WunderCorp App Planning API
+  description: Software planning and implementation direction for agent callers.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
   tags:
-  - Compute Capacity
-  - GPU
-  - Machine Payments
-  - MPP
-  - Marketplace
+  - App Planning
   properties:
   - type: OpenAPI
-    url: openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml
-  - type: OpenAPI
-    url: https://mpp.openmodel.sh/mpp/capacity/openapi.json
-    name: Provider-hosted OpenAPI (identical copy at api.walton.bot/mpp/capacity/openapi.json)
-  - type: Overlay
-    url: overlays/aureliusagent-dev-walton-capacity-mpp-api-overlay.yaml
+    url: openapi/aureliusagent-dev-app-planning-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
   - type: Authentication
     url: authentication/aureliusagent-dev-authentication.yml
   - type: Conventions
     url: conventions/aureliusagent-dev-conventions.yml
   - type: ErrorCatalog
     url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
   - type: DataModel
     url: data-model/aureliusagent-dev-data-model.yml
-  - type: AgentSkill
-    url: skills/_index.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-builderstudio-api
+  name: WunderCorp Builder Studio API
+  description: BuilderStudio preview and app-generation support endpoints.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - BuilderStudio
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-builderstudio-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-capacity-api
+  name: WunderCorp Capacity API
+  description: The Capacity API from WunderCorp — 2 operation(s) for capacity.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - Capacity
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-capacity-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-commerce-api
+  name: WunderCorp Commerce API
+  description: Paid commerce metadata generation utilities.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - Commerce
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-commerce-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-inference-gateway-api
+  name: WunderCorp Inference Gateway API
+  description: >-
+    Transparent MPP routing to supported model, media, speech, and document intelligence providers.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - Inference Gateway
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-inference-gateway-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-machine-payments-api
+  name: WunderCorp Machine Payments API
+  description: Paid Wundership endpoints that agents can invoke after MPP payment.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - Machine Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-machine-payments-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-mpp-api
+  name: WunderCorp Mpp API
+  description: The Mpp API from WunderCorp — 8 operation(s) for mpp.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - Mpp
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-mpp-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
+- aid: aureliusagent-dev:aureliusagent-dev-openmodel-pricing-api
+  name: WunderCorp OpenModel Pricing API
+  description: Paid access to effective-dated model pricing and cost-weighted allowance estimates.
+  humanURL: https://aureliusagent.dev/
+  baseURL: https://rpc.aureliusagent.dev/a2a
+  tags:
+  - OpenModel Pricing
+  properties:
+  - type: OpenAPI
+    url: openapi/aureliusagent-dev-openmodel-pricing-api-openapi.yml
+  - type: Documentation
+    url: https://wundercorp.co/agents/
+  - type: LLMsTxt
+    url: llms/aureliusagent-dev-llms.txt
+  - type: Plans
+    url: plans/aureliusagent-dev-plans-pricing.yml
+  - type: Pricing
+    url: https://wundercorp.co/agents/
+  - type: Authentication
+    url: authentication/aureliusagent-dev-authentication.yml
+  - type: Conventions
+    url: conventions/aureliusagent-dev-conventions.yml
+  - type: ErrorCatalog
+    url: errors/aureliusagent-dev-problem-types.yml
+  - type: Conformance
+    url: conformance/aureliusagent-dev-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: Deprecation
+    url: lifecycle/aureliusagent-dev-lifecycle.yml
+  - type: RateLimits
+    url: rate-limits/aureliusagent-dev-rate-limits.yml
+  - type: DataModel
+    url: data-model/aureliusagent-dev-data-model.yml
+  - type: CLI
+    url: cli/aureliusagent-dev-cli.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -258,3 +477,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 32
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://aureliusagent.dev/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3.0"
+  control: 200

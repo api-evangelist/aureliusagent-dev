@@ -1,0 +1,413 @@
+openapi: 3.2.0
+info:
+  title: Wundership MPP OpenModel Pricing API
+  version: '2026-07-15'
+  description: Public OpenAPI surface for Wundership machine-paid agent requests. Unpaid requests return HTTP 402 Payment Required.
+  guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  x-guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  contact:
+    email: hello@wundercorp.co
+    url: https://wundercorp.co
+    name: WunderCorp, Inc.
+servers:
+- url: https://mpp.openmodel.sh
+tags:
+- description: Paid access to effective-dated model pricing and cost-weighted allowance estimates.
+  name: OpenModel Pricing
+paths:
+  /v1/pricing/estimate:
+    post:
+      tags:
+      - OpenModel Pricing
+      summary: OpenModel pricing estimate
+      description: Resolve effective-dated provider pricing and cost-weighted monthly allowance consumption after machine payment. This is a paid machine-payment endpoint. Unpaid calls return HTTP 402 Payment Required with machine-payment metadata. Retry the same request after payment authorization.
+      operationId: postOpenmodelPricingEstimate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - provider
+              - model
+              - usage
+              properties:
+                usage:
+                  type: object
+                  properties:
+                    inputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    outputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    cachedInputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    cacheWriteTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    reasoningTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                  additionalProperties: false
+                region:
+                  default: global
+                  type: string
+                serviceTier:
+                  default: default
+                  type: string
+                model:
+                  type: string
+                provider:
+                  type: string
+                occurredAt:
+                  format: date-time
+                  type: string
+            examples:
+              pricingEstimate:
+                value:
+                  usage:
+                    cacheWriteTokens: 0
+                    inputTokens: 1000000
+                    reasoningTokens: 0
+                    cachedInputTokens: 0
+                    outputTokens: 250000
+                  provider: openai
+                  model: gpt-4o-mini
+                  region: global
+                  serviceTier: default
+                summary: Estimate provider cost and cost-weighted allowance consumption
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: openmodel_pricing_estimate
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                  ok:
+                    type: boolean
+                  productName:
+                    example: OpenModel pricing estimate
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 1
+        display: '0.01'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '0.010000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '0.010000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '1'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+  /mpp/openmodel/pricing/estimate:
+    post:
+      tags:
+      - OpenModel Pricing
+      summary: OpenModel pricing estimate
+      description: Resolve effective-dated provider pricing and cost-weighted monthly allowance consumption after machine payment. This path is deprecated. Use https://mpp.openmodel.sh/v1/pricing/estimate instead.
+      operationId: postMppOpenmodelPricingEstimate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - provider
+              - model
+              - usage
+              properties:
+                usage:
+                  type: object
+                  properties:
+                    inputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    outputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    cachedInputTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    cacheWriteTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                    reasoningTokens:
+                      minimum: 0
+                      type: integer
+                      format: int64
+                  additionalProperties: false
+                region:
+                  default: global
+                  type: string
+                serviceTier:
+                  default: default
+                  type: string
+                model:
+                  type: string
+                provider:
+                  type: string
+                occurredAt:
+                  format: date-time
+                  type: string
+            examples:
+              pricingEstimate:
+                value:
+                  usage:
+                    cacheWriteTokens: 0
+                    inputTokens: 1000000
+                    reasoningTokens: 0
+                    cachedInputTokens: 0
+                    outputTokens: 250000
+                  provider: openai
+                  model: gpt-4o-mini
+                  region: global
+                  serviceTier: default
+                summary: Estimate provider cost and cost-weighted allowance consumption
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: openmodel_pricing_estimate
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                  ok:
+                    type: boolean
+                  productName:
+                    example: OpenModel pricing estimate
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 1
+        display: '0.01'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '0.010000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '0.010000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '1'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+      deprecated: true
+      x-successor-path: /v1/pricing/estimate
+      x-operation-id-source: normalized
+      x-operation-id-original: postOpenmodelPricingEstimate
+components:
+  schemas:
+    PaymentRequired:
+      type: object
+      required:
+      - error
+      - status
+      - resource
+      - amount
+      - payment
+      properties:
+        error:
+          example: payment_required
+          type: string
+        type:
+          example: machine_payment_required
+          type: string
+        status:
+          example: 402
+          type: integer
+        protocols:
+          items:
+            type: string
+          type: array
+        provider:
+          example: wundership
+          type: string
+        resource:
+          format: uri
+          type: string
+        product:
+          additionalProperties: true
+          type: object
+        amount:
+          additionalProperties: true
+          type: object
+        payment:
+          additionalProperties: true
+          type: object
+        requestId:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        fallback:
+          type: string
+      additionalProperties: true
+  securitySchemes:
+    mppPayment:
+      description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
+      scheme: Payment
+      type: http

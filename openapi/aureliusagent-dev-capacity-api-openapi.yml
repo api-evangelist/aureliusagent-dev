@@ -1,0 +1,588 @@
+openapi: 3.2.0
+info:
+  title: Walton MPP Capacity API
+  version: 4.0.0
+  description: MPP marketplace for GPU capacity, hosted model inference, edge compute, shared workspaces, and supervised resources. Walton coordinates payment and direct handoff metadata without relaying provider capacity traffic.
+servers:
+- url: https://api.walton.bot
+tags:
+- name: Capacity
+paths:
+  /capacity/assets:
+    post:
+      summary: Create a provider listing
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacityListingRequest'
+      responses:
+        '201':
+          description: Created listing
+      tags:
+      - Capacity
+      operationId: postCapacityAssets
+      x-operation-id-source: derived
+  /capacity/sessions/{sessionId}/peering-offer:
+    post:
+      summary: Publish provider peering details
+      description: Provider publishes session-scoped public endpoint information and setup steps after reviewing the paid buyer request.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderPeeringOffer'
+      responses:
+        '200':
+          description: Provider handoff ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacitySession'
+      tags:
+      - Capacity
+      operationId: postCapacitySessionsBySessionIdPeeringOffer
+      x-operation-id-source: derived
+components:
+  schemas:
+    PeeringExchange:
+      type: object
+      properties:
+        status:
+          type: string
+        connectionMode:
+          type: string
+        providerReady:
+          type: boolean
+        buyerConfirmed:
+          type: boolean
+        buyerPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerSshPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerEndpoint:
+          type:
+          - string
+          - 'null'
+        buyerAllowedIps:
+          type:
+          - string
+          - 'null'
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
+        providerEndpointHost:
+          type:
+          - string
+          - 'null'
+        providerEndpointPort:
+          type:
+          - integer
+          - 'null'
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerSetupSteps:
+          type: array
+          items:
+            type: string
+        buyerSetupSteps:
+          type: array
+          items:
+            type: string
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
+    CapacityOffer:
+      type: object
+      required:
+      - id
+      - type
+      - title
+      - status
+      - locationLabel
+      - currencyCode
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+          - GPU_CAPACITY
+          - MODEL_INFERENCE
+          - EDGE_COMPUTE
+          - SHARED_WORKSPACE
+          - SERVICE_ROBOT
+          - THREE_D_PRINTER
+        title:
+          type: string
+        summary:
+          type: string
+        status:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        locationLabel:
+          type: string
+        hourlyRateCents:
+          type:
+          - integer
+          - 'null'
+        perTaskRateCents:
+          type:
+          - integer
+          - 'null'
+        unitRateCents:
+          type:
+          - integer
+          - 'null'
+        billingUnit:
+          type:
+          - string
+          - 'null'
+          description: Usage unit such as 1K_TOKENS, REQUEST, IMAGE, AUDIO_MINUTE, or KWH.
+        sessionFeeCents:
+          type:
+          - integer
+          - 'null'
+        currencyCode:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        gpuModel:
+          type:
+          - string
+          - 'null'
+        gpuCount:
+          type:
+          - integer
+          - 'null'
+        gpuMemoryGb:
+          type:
+          - integer
+          - 'null'
+        gpuAllocationMode:
+          type:
+          - string
+          - 'null'
+        cpuModel:
+          type:
+          - string
+          - 'null'
+        cpuCoreCount:
+          type:
+          - integer
+          - 'null'
+        memoryGb:
+          type:
+          - integer
+          - 'null'
+        storageGb:
+          type:
+          - integer
+          - 'null'
+        connectorType:
+          type:
+          - string
+          - 'null'
+          description: Inference task for MODEL_INFERENCE, workspace type for SHARED_WORKSPACE.
+        connectorProtocol:
+          type:
+          - string
+          - 'null'
+          description: Hosted model endpoint standard or provider-side control protocol.
+        connectorCount:
+          type:
+          - integer
+          - 'null'
+        accessMode:
+          type:
+          - string
+          - 'null'
+        availabilitySchedule:
+          type: array
+          items:
+            type: string
+        requiresOwnerApproval:
+          type: boolean
+        connectorOnline:
+          type: boolean
+        ownerDisplayName:
+          type: string
+        ownerRating:
+          type: number
+        completedRentals:
+          type: integer
+        model:
+          type:
+          - string
+          - 'null'
+          description: Hosted model name or provider model ID for MODEL_INFERENCE.
+        capacity:
+          type:
+          - integer
+          - 'null'
+          description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
+    CapacitySession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        statusLabel:
+          type: string
+        asset:
+          $ref: '#/components/schemas/CapacityOffer'
+        task:
+          type: string
+        amountCents:
+          type: integer
+        formattedAmount:
+          type: string
+        paymentRail:
+          type: string
+        paymentReceipt:
+          type: string
+        accessToken:
+          type:
+          - string
+          - 'null'
+        handoffUrl:
+          type:
+          - string
+          - 'null'
+        resourceAccess:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        gpuAccess:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        events:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        cancellable:
+          type: boolean
+        peering:
+          oneOf:
+          - $ref: '#/components/schemas/PeeringExchange'
+          - type: 'null'
+    CapacityListingRequest:
+      type: object
+      required:
+      - type
+      - title
+      - summary
+      - autonomyLevel
+      - latitude
+      - longitude
+      - locationLabel
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+          - GPU_CAPACITY
+          - MODEL_INFERENCE
+          - EDGE_COMPUTE
+          - SHARED_WORKSPACE
+          - SERVICE_ROBOT
+          - THREE_D_PRINTER
+        title:
+          type: string
+        summary:
+          type: string
+        status:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        locationLabel:
+          type: string
+        hourlyRateCents:
+          type:
+          - integer
+          - 'null'
+        perTaskRateCents:
+          type:
+          - integer
+          - 'null'
+        unitRateCents:
+          type:
+          - integer
+          - 'null'
+        billingUnit:
+          type:
+          - string
+          - 'null'
+          description: Usage unit such as 1K_TOKENS, REQUEST, IMAGE, AUDIO_MINUTE, or KWH.
+        sessionFeeCents:
+          type:
+          - integer
+          - 'null'
+        currencyCode:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+        gpuModel:
+          type:
+          - string
+          - 'null'
+        gpuCount:
+          type:
+          - integer
+          - 'null'
+        gpuMemoryGb:
+          type:
+          - integer
+          - 'null'
+        gpuAllocationMode:
+          type:
+          - string
+          - 'null'
+        cpuModel:
+          type:
+          - string
+          - 'null'
+        cpuCoreCount:
+          type:
+          - integer
+          - 'null'
+        memoryGb:
+          type:
+          - integer
+          - 'null'
+        storageGb:
+          type:
+          - integer
+          - 'null'
+        connectorType:
+          type:
+          - string
+          - 'null'
+          description: Inference task for MODEL_INFERENCE, workspace type for SHARED_WORKSPACE.
+        connectorProtocol:
+          type:
+          - string
+          - 'null'
+          description: Hosted model endpoint standard or provider-side control protocol.
+        connectorCount:
+          type:
+          - integer
+          - 'null'
+        accessMode:
+          type:
+          - string
+          - 'null'
+          enum:
+          - WIREGUARD
+          - SSH
+          - TAILSCALE
+          - HTTPS_API
+          - MANUAL
+          - null
+          description: Default direct handoff mode offered by the provider.
+        availabilitySchedule:
+          type: array
+          items:
+            type: string
+        requiresOwnerApproval:
+          type: boolean
+        connectorOnline:
+          type: boolean
+          deprecated: true
+          description: Legacy field retained for compatibility.
+        ownerDisplayName:
+          type: string
+        ownerRating:
+          type: number
+        completedRentals:
+          type: integer
+        exactLocationLabel:
+          type:
+          - string
+          - 'null'
+          description: Private provider location. Never returned by public offer search.
+        accessInstructions:
+          type:
+          - string
+          - 'null'
+          description: Provider-side preparation notes. Public searches do not expose private setup secrets.
+        apiControlEnabled:
+          type: boolean
+          deprecated: true
+          description: Legacy connector flag. Direct peering does not require a Walton connector.
+        mppEnabled:
+          type: boolean
+        depositCents:
+          type:
+          - integer
+          - 'null'
+        maxConcurrentSessions:
+          type:
+          - integer
+          - 'null'
+        containerRuntime:
+          type:
+          - string
+          - 'null'
+        model:
+          type:
+          - string
+          - 'null'
+          description: Hosted model name or provider model ID for MODEL_INFERENCE.
+        capacity:
+          type:
+          - integer
+          - 'null'
+          description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
+    ProviderPeeringOffer:
+      type: object
+      required:
+      - connectionMode
+      properties:
+        connectionMode:
+          type: string
+          enum:
+          - WIREGUARD
+          - SSH
+          - TAILSCALE
+          - HTTPS_API
+          - MANUAL
+        endpointHost:
+          type:
+          - string
+          - 'null'
+        endpointPort:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          maximum: 65535
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+x-walton-model-providers:
+- Z.ai
+- Moonshot AI (Kimi)
+- DeepSeek
+- Mistral AI
+- Cohere
+- Anthropic
+- OpenAI
+- Google
+- Meta
+- Alibaba Cloud (Qwen)
+- xAI
+- MiniMax
+- AI21 Labs
+- Jina AI
+- Nomic AI
+- Nous Research
+- Black Forest Labs
+- Stability AI
+- Microsoft
+- Other

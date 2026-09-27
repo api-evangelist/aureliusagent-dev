@@ -1,0 +1,576 @@
+openapi: 3.2.0
+info:
+  title: Wundership MPP App Planning API
+  version: '2026-07-15'
+  description: Public OpenAPI surface for Wundership machine-paid agent requests. Unpaid requests return HTTP 402 Payment Required.
+  guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  x-guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  contact:
+    email: hello@wundercorp.co
+    url: https://wundercorp.co
+    name: WunderCorp, Inc.
+servers:
+- url: https://mpp.openmodel.sh
+tags:
+- description: Software planning and implementation direction for agent callers.
+  name: App Planning
+paths:
+  /v1/plan:
+    post:
+      tags:
+      - App Planning
+      summary: Wundership app plan
+      description: Generate a structured software plan, product outline, feature map, and implementation-ready app direction. This is a paid machine-payment endpoint. Unpaid calls return HTTP 402 Payment Required with machine-payment metadata. Retry the same request after payment authorization.
+      operationId: postWundershipPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - prompt
+              properties:
+                project_name:
+                  description: Optional project or product name.
+                  type: string
+                prompt:
+                  description: Software idea, product request, or agent task to turn into an implementation-ready plan.
+                  type: string
+                preferred_stack:
+                  description: Preferred technical stack, framework, language, or deployment target.
+                  type: string
+                target_customer:
+                  description: Who the app or software plan is for.
+                  type: string
+                output_format:
+                  description: Requested output style, such as implementation_plan, product_outline, or feature_map.
+                  type: string
+                constraints:
+                  description: Hard requirements, limits, or product constraints.
+                  items:
+                    type: string
+                  type: array
+            examples:
+              softwarePlan:
+                value:
+                  project_name: Agent Market
+                  prompt: Build a marketplace for AI agents that can buy and sell paid API calls.
+                  preferred_stack: Next.js, Spring Boot, PostgreSQL, Stripe
+                  target_customer: Founders, AI builders, and autonomous agents
+                  output_format: implementation_plan
+                  constraints:
+                  - Use a machine-payment endpoint
+                  - Return clear implementation phases
+                summary: Generate an implementation-ready app plan
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: wundership_plan
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                    properties:
+                      productBrief:
+                        type: string
+                      buildPhases:
+                        items:
+                          type: string
+                        type: array
+                      recommendedNextPaidCall:
+                        additionalProperties: true
+                        type: object
+                      risks:
+                        items:
+                          type: string
+                        type: array
+                      architecture:
+                        items:
+                          type: string
+                        type: array
+                  ok:
+                    type: boolean
+                  productName:
+                    example: Wundership app plan
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 100
+        display: '1.00'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '1.000000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '1.000000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '100'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+  /mpp/plan:
+    post:
+      tags:
+      - App Planning
+      summary: Wundership app plan
+      description: Generate a structured software plan, product outline, feature map, and implementation-ready app direction. This path is deprecated. Use https://mpp.openmodel.sh/v1/plan instead.
+      operationId: postMppPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - prompt
+              properties:
+                project_name:
+                  description: Optional project or product name.
+                  type: string
+                prompt:
+                  description: Software idea, product request, or agent task to turn into an implementation-ready plan.
+                  type: string
+                preferred_stack:
+                  description: Preferred technical stack, framework, language, or deployment target.
+                  type: string
+                target_customer:
+                  description: Who the app or software plan is for.
+                  type: string
+                output_format:
+                  description: Requested output style, such as implementation_plan, product_outline, or feature_map.
+                  type: string
+                constraints:
+                  description: Hard requirements, limits, or product constraints.
+                  items:
+                    type: string
+                  type: array
+            examples:
+              softwarePlan:
+                value:
+                  project_name: Agent Market
+                  prompt: Build a marketplace for AI agents that can buy and sell paid API calls.
+                  preferred_stack: Next.js, Spring Boot, PostgreSQL, Stripe
+                  target_customer: Founders, AI builders, and autonomous agents
+                  output_format: implementation_plan
+                  constraints:
+                  - Use a machine-payment endpoint
+                  - Return clear implementation phases
+                summary: Generate an implementation-ready app plan
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: wundership_plan
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                    properties:
+                      productBrief:
+                        type: string
+                      buildPhases:
+                        items:
+                          type: string
+                        type: array
+                      recommendedNextPaidCall:
+                        additionalProperties: true
+                        type: object
+                      risks:
+                        items:
+                          type: string
+                        type: array
+                      architecture:
+                        items:
+                          type: string
+                        type: array
+                  ok:
+                    type: boolean
+                  productName:
+                    example: Wundership app plan
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 100
+        display: '1.00'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '1.000000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '1.000000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '100'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+      deprecated: true
+      x-successor-path: /v1/plan
+      x-operation-id-source: normalized
+      x-operation-id-original: postWundershipPlan
+  /mpp/aurelius/plan:
+    post:
+      tags:
+      - App Planning
+      summary: Wundership app plan
+      description: Generate a structured software plan, product outline, feature map, and implementation-ready app direction. This path is deprecated. Use https://mpp.openmodel.sh/v1/plan instead.
+      operationId: postMppAureliusPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - prompt
+              properties:
+                project_name:
+                  description: Optional project or product name.
+                  type: string
+                prompt:
+                  description: Software idea, product request, or agent task to turn into an implementation-ready plan.
+                  type: string
+                preferred_stack:
+                  description: Preferred technical stack, framework, language, or deployment target.
+                  type: string
+                target_customer:
+                  description: Who the app or software plan is for.
+                  type: string
+                output_format:
+                  description: Requested output style, such as implementation_plan, product_outline, or feature_map.
+                  type: string
+                constraints:
+                  description: Hard requirements, limits, or product constraints.
+                  items:
+                    type: string
+                  type: array
+            examples:
+              softwarePlan:
+                value:
+                  project_name: Agent Market
+                  prompt: Build a marketplace for AI agents that can buy and sell paid API calls.
+                  preferred_stack: Next.js, Spring Boot, PostgreSQL, Stripe
+                  target_customer: Founders, AI builders, and autonomous agents
+                  output_format: implementation_plan
+                  constraints:
+                  - Use a machine-payment endpoint
+                  - Return clear implementation phases
+                summary: Generate an implementation-ready app plan
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: wundership_plan
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                    properties:
+                      productBrief:
+                        type: string
+                      buildPhases:
+                        items:
+                          type: string
+                        type: array
+                      recommendedNextPaidCall:
+                        additionalProperties: true
+                        type: object
+                      risks:
+                        items:
+                          type: string
+                        type: array
+                      architecture:
+                        items:
+                          type: string
+                        type: array
+                  ok:
+                    type: boolean
+                  productName:
+                    example: Wundership app plan
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 100
+        display: '1.00'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '1.000000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '1.000000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '100'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+      deprecated: true
+      x-successor-path: /v1/plan
+      x-operation-id-source: normalized
+      x-operation-id-original: postWundershipPlan
+components:
+  schemas:
+    PaymentRequired:
+      type: object
+      required:
+      - error
+      - status
+      - resource
+      - amount
+      - payment
+      properties:
+        error:
+          example: payment_required
+          type: string
+        type:
+          example: machine_payment_required
+          type: string
+        status:
+          example: 402
+          type: integer
+        protocols:
+          items:
+            type: string
+          type: array
+        provider:
+          example: wundership
+          type: string
+        resource:
+          format: uri
+          type: string
+        product:
+          additionalProperties: true
+          type: object
+        amount:
+          additionalProperties: true
+          type: object
+        payment:
+          additionalProperties: true
+          type: object
+        requestId:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        fallback:
+          type: string
+      additionalProperties: true
+  securitySchemes:
+    mppPayment:
+      description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
+      scheme: Payment
+      type: http

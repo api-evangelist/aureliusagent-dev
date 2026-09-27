@@ -1,0 +1,504 @@
+openapi: 3.2.0
+info:
+  title: Wundership MPP Inference Gateway API
+  version: '2026-07-15'
+  description: Public OpenAPI surface for Wundership machine-paid agent requests. Unpaid requests return HTTP 402 Payment Required.
+  guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  x-guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  contact:
+    email: hello@wundercorp.co
+    url: https://wundercorp.co
+    name: WunderCorp, Inc.
+servers:
+- url: https://mpp.openmodel.sh
+tags:
+- description: Transparent MPP routing to supported model, media, speech, and document intelligence providers.
+  name: Inference Gateway
+paths:
+  /v1/capabilities:
+    get:
+      tags:
+      - Inference Gateway
+      operationId: getMppInferenceCapabilities
+      summary: List OpenModel MPP gateway capabilities
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Discovery response
+  /v1/providers:
+    get:
+      tags:
+      - Inference Gateway
+      operationId: getMppInferenceProviders
+      summary: List supported MPP inference providers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Discovery response
+  /v1/models:
+    get:
+      tags:
+      - Inference Gateway
+      operationId: getMppInferenceModels
+      summary: List curated provider model families
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Discovery response
+  /v1/chat/completions:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppChatCompletions
+      summary: Create a chat completion
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/responses:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppResponses
+      summary: Create a model response
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/messages:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppMessages
+      summary: Create an Anthropic-style message
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/embeddings:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppEmbeddings
+      summary: Create embeddings
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/images/generations:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppImageGeneration
+      summary: Generate images
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/audio/transcriptions:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppAudioTranscription
+      summary: Transcribe audio
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/audio/speech:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppAudioSpeech
+      summary: Generate speech
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /v1/moderations:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: postMppModeration
+      summary: Moderate content
+      description: Routes the request to a supported MPP provider. Select the provider with X-OpenModel-Provider, a top-level provider field, or a provider-prefixed model ID. The upstream HTTP 402 challenge and payment receipt are passed through.
+      parameters:
+      - required: false
+        schema:
+          type: string
+        description: Provider key such as openai, anthropic, gemini, openrouter, deepseek, groq, mistral, perplexity, grok, fal, replicate, stability-ai, suno, deepgram, or mathpix.
+        name: X-OpenModel-Provider
+        in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-gateway-api-key-required: false
+  /providers/{provider}/{upstreamPath}:
+    post:
+      tags:
+      - Inference Gateway
+      operationId: relayMppProviderRequest
+      summary: Relay a request to a whitelisted MPP provider
+      description: Preserves the provider-specific upstream path, request body, MPP Authorization credential, HTTP 402 challenge, and payment receipt. upstreamPath may contain multiple path segments.
+      parameters:
+      - name: provider
+        schema:
+          type: string
+        required: true
+        in: path
+      - name: upstreamPath
+        schema:
+          type: string
+        required: true
+        in: path
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: false
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-supported-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - HEAD
+      x-payment-mode: upstream_mpp_challenge_passthrough
+    get:
+      tags:
+      - Inference Gateway
+      operationId: getProvidersByProviderByUpstreamPath
+      summary: Relay a request to a whitelisted MPP provider
+      description: Preserves the provider-specific upstream path, request body, MPP Authorization credential, HTTP 402 challenge, and payment receipt. upstreamPath may contain multiple path segments.
+      parameters:
+      - name: provider
+        schema:
+          type: string
+        required: true
+        in: path
+      - name: upstreamPath
+        schema:
+          type: string
+        required: true
+        in: path
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        required: false
+      responses:
+        '200':
+          description: Upstream provider response
+        '202':
+          description: Upstream asynchronous operation accepted
+        '400':
+          description: Unknown provider or invalid gateway request
+        '402':
+          description: Upstream MPP payment required
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Upstream MPP payment challenge.
+        '502':
+          description: Upstream MPP provider unavailable
+        '503':
+          description: Gateway or provider route disabled
+      x-supported-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - HEAD
+      x-payment-mode: upstream_mpp_challenge_passthrough
+      x-operation-id-source: normalized
+      x-operation-id-original: relayMppProviderRequest
+components:
+  securitySchemes:
+    mppPayment:
+      description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
+      scheme: Payment
+      type: http

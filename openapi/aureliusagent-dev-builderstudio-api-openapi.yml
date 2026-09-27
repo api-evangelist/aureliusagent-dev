@@ -1,0 +1,339 @@
+openapi: 3.2.0
+info:
+  title: Wundership MPP Builder Studio API
+  version: '2026-07-15'
+  description: Public OpenAPI surface for Wundership machine-paid agent requests. Unpaid requests return HTTP 402 Payment Required.
+  guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  x-guidance: Use POST /v1/plan with a JSON body containing a prompt or idea to buy a structured Wundership software plan. Discovery endpoints are public. Paid operations declare x-payment-info and return HTTP 402 Payment Required until payment is authorized. After payment, retry the same request with the payment authorization or verified proxy headers described by the payment challenge.
+  contact:
+    email: hello@wundercorp.co
+    url: https://wundercorp.co
+    name: WunderCorp, Inc.
+servers:
+- url: https://mpp.openmodel.sh
+tags:
+- description: BuilderStudio preview and app-generation support endpoints.
+  name: BuilderStudio
+paths:
+  /v1/builder/preview:
+    post:
+      tags:
+      - BuilderStudio
+      summary: BuilderStudio preview
+      description: Prepare a BuilderStudio preview package for a product idea. This is a paid machine-payment endpoint. Unpaid calls return HTTP 402 Payment Required with machine-payment metadata. Retry the same request after payment authorization.
+      operationId: postBuilderPreview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              required:
+              - prompt
+              properties:
+                output_format:
+                  description: Optional requested output format.
+                  type: string
+                context:
+                  description: Optional structured context for the request.
+                  type: object
+                  additionalProperties: true
+                prompt:
+                  description: Agent task or generation prompt for this paid Wundership endpoint.
+                  type: string
+            examples:
+              default:
+                value:
+                  output_format: json
+                  prompt: Complete this Wundership task for an agent caller.
+                summary: Invoke paid endpoint
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: builder_preview
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                  ok:
+                    type: boolean
+                  productName:
+                    example: BuilderStudio preview
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 500
+        display: '5.00'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '5.000000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '5.000000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '500'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+  /mpp/builder/preview:
+    post:
+      tags:
+      - BuilderStudio
+      summary: BuilderStudio preview
+      description: Prepare a BuilderStudio preview package for a product idea. This path is deprecated. Use https://mpp.openmodel.sh/v1/builder/preview instead.
+      operationId: postMppBuilderPreview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              required:
+              - prompt
+              properties:
+                output_format:
+                  description: Optional requested output format.
+                  type: string
+                context:
+                  description: Optional structured context for the request.
+                  type: object
+                  additionalProperties: true
+                prompt:
+                  description: Agent task or generation prompt for this paid Wundership endpoint.
+                  type: string
+            examples:
+              default:
+                value:
+                  output_format: json
+                  prompt: Complete this Wundership task for an agent caller.
+                summary: Invoke paid endpoint
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - ok
+                - provider
+                - productKey
+                - paymentVerified
+                - result
+                properties:
+                  generatedAt:
+                    format: date-time
+                    type: string
+                  provider:
+                    example: wundership
+                    type: string
+                  productKey:
+                    example: builder_preview
+                    type: string
+                  paymentVerified:
+                    type: boolean
+                  result:
+                    type: object
+                    additionalProperties: true
+                  ok:
+                    type: boolean
+                  productName:
+                    example: BuilderStudio preview
+                    type: string
+                  receipt:
+                    type: string
+          description: Paid request completed
+        '402':
+          headers:
+            WWW-Authenticate:
+              schema:
+                type: string
+              description: Machine-payment challenge header when a compatible payment rail is active.
+            X-Wundership-Agent-Price:
+              schema:
+                type: string
+              description: Human-readable price for the paid endpoint.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequired'
+          description: Payment required
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Paid forwarding failed
+      x-agent-price:
+        minorUnits: 500
+        display: '5.00'
+        currency: USD
+      x-machine-payment-protocols:
+      - mpp
+      x-machine-payment-rails:
+      - key: stripe_spt
+        method: stripe
+        intent: charge
+        networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+        paymentMethodTypes:
+        - card
+        - link
+        description: Stripe Shared Payment Token rail for card and Link machine payments.
+      x-payment-info:
+        price:
+          amount: '5.000000'
+          mode: fixed
+          currency: USD
+        pricingMode: fixed
+        currency: USD
+        amount: '5.000000'
+        unit: request
+        protocols:
+        - mpp:
+            method: stripe
+            intent: charge
+            currency: USD
+            networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+            paymentMethodTypes:
+            - card
+            - link
+        offers:
+        - method: stripe
+          intent: charge
+          amount: '500'
+          currency: usd
+          networkId: profile_61UuYA3H1dpGiR9soA6UuYA20RSQieSC6KcBS11OK1dI
+          paymentMethodTypes:
+          - card
+          - link
+      deprecated: true
+      x-successor-path: /v1/builder/preview
+      x-operation-id-source: normalized
+      x-operation-id-original: postBuilderPreview
+components:
+  schemas:
+    PaymentRequired:
+      type: object
+      required:
+      - error
+      - status
+      - resource
+      - amount
+      - payment
+      properties:
+        error:
+          example: payment_required
+          type: string
+        type:
+          example: machine_payment_required
+          type: string
+        status:
+          example: 402
+          type: integer
+        protocols:
+          items:
+            type: string
+          type: array
+        provider:
+          example: wundership
+          type: string
+        resource:
+          format: uri
+          type: string
+        product:
+          additionalProperties: true
+          type: object
+        amount:
+          additionalProperties: true
+          type: object
+        payment:
+          additionalProperties: true
+          type: object
+        requestId:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        fallback:
+          type: string
+      additionalProperties: true
+  securitySchemes:
+    mppPayment:
+      description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
+      scheme: Payment
+      type: http

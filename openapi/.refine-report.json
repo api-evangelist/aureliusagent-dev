@@ -1,0 +1,46 @@
+{
+  "provider": "aureliusagent-dev",
+  "sources": [
+    "_original/aureliusagent-dev-walton-capacity-mpp-api-openapi.json",
+    "_original/aureliusagent-dev-wundership-mpp-api-openapi.json"
+  ],
+  "outputs": [
+    "aureliusagent-dev-capacity-api-openapi.yml",
+    "aureliusagent-dev-mpp-api-openapi.yml",
+    "aureliusagent-dev-ai-generation-api-openapi.yml",
+    "aureliusagent-dev-app-planning-api-openapi.yml",
+    "aureliusagent-dev-builderstudio-api-openapi.yml",
+    "aureliusagent-dev-commerce-api-openapi.yml",
+    "aureliusagent-dev-inference-gateway-api-openapi.yml",
+    "aureliusagent-dev-machine-payments-api-openapi.yml",
+    "aureliusagent-dev-openmodel-pricing-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 2 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths GET /mpp/capacity -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths GET /mpp/capacity/offers -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /mpp/capacity/quotes -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /mpp/capacity/sessions -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths GET /mpp/capacity/sessions/{sessionId} -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /mpp/capacity/sessions/{sessionId}/cancel -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /capacity/assets -> Capacity",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /mpp/capacity/sessions/{sessionId}/peering-profile -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /mpp/capacity/sessions/{sessionId}/connection-confirmed -> Mpp",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: tagged paths POST /capacity/sessions/{sessionId}/peering-offer -> Capacity",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: declared missing tag: Capacity",
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: declared missing tag: Mpp",
+    "aureliusagent-dev-wundership-mpp-api-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "superseded outputs removed: aureliusagent-dev-walton-capacity-mpp-api-openapi.yml, aureliusagent-dev-wundership-mpp-api-openapi.yml",
+    "apis.yml register: written (+9 apis, 10 total)"
+  ],
+  "skipped": [
+    "aureliusagent-dev-walton-capacity-mpp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-wundership-mpp-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
