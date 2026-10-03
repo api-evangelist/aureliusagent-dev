@@ -212,6 +212,56 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    CapacityQuoteRequest:
+      type: object
+      required:
+      - assetId
+      - task
+      - startAt
+      - endAt
+      properties:
+        assetId:
+          type: string
+          format: uuid
+        task:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        requestedGpuCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedVramGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        requestedCpuCores:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedMemoryGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedStorageGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedUnits:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          description: Usage units for hosted inference, seats for a workspace, or job units for a supervised resource.
     CapacitySessionRequest:
       type: object
       required:
@@ -315,89 +365,6 @@ components:
           type:
           - string
           - 'null'
-    CapacityQuote:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        asset:
-          $ref: '#/components/schemas/CapacityOffer'
-        task:
-          type: string
-        startAt:
-          type: string
-          format: date-time
-        endAt:
-          type: string
-          format: date-time
-        amountCents:
-          type: integer
-        depositCents:
-          type: integer
-        platformFeeCents:
-          type: integer
-        ownerPayoutCents:
-          type: integer
-        formattedAmount:
-          type: string
-        currencyCode:
-          type: string
-        paymentRail:
-          type: string
-        expiresAt:
-          type: string
-          format: date-time
-    CapacityQuoteRequest:
-      type: object
-      required:
-      - assetId
-      - task
-      - startAt
-      - endAt
-      properties:
-        assetId:
-          type: string
-          format: uuid
-        task:
-          type: string
-        startAt:
-          type: string
-          format: date-time
-        endAt:
-          type: string
-          format: date-time
-        requestedGpuCount:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedVramGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-        requestedCpuCores:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedMemoryGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedStorageGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedUnits:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-          description: Usage units for hosted inference, seats for a workspace, or job units for a supervised resource.
     BuyerPeeringProfile:
       type: object
       required:
@@ -435,89 +402,6 @@ components:
           type:
           - string
           - 'null'
-    PeeringExchange:
-      type: object
-      properties:
-        status:
-          type: string
-        connectionMode:
-          type: string
-        providerReady:
-          type: boolean
-        buyerConfirmed:
-          type: boolean
-        buyerPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerSshPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerEndpoint:
-          type:
-          - string
-          - 'null'
-        buyerAllowedIps:
-          type:
-          - string
-          - 'null'
-        buyerIdentity:
-          type:
-          - string
-          - 'null'
-        buyerNetworkNotes:
-          type:
-          - string
-          - 'null'
-        providerEndpointHost:
-          type:
-          - string
-          - 'null'
-        providerEndpointPort:
-          type:
-          - integer
-          - 'null'
-        providerPublicKey:
-          type:
-          - string
-          - 'null'
-        providerAllowedIps:
-          type:
-          - string
-          - 'null'
-        sshUsername:
-          type:
-          - string
-          - 'null'
-        serviceUrl:
-          type:
-          - string
-          - 'null'
-        accessCode:
-          type:
-          - string
-          - 'null'
-        providerInstructions:
-          type:
-          - string
-          - 'null'
-        configurationSnippet:
-          type:
-          - string
-          - 'null'
-        providerSetupSteps:
-          type: array
-          items:
-            type: string
-        buyerSetupSteps:
-          type: array
-          items:
-            type: string
-        providerCompletedSteps:
-          type: array
-          items:
-            type: string
     CapacityOffer:
       type: object
       required:
@@ -655,6 +539,122 @@ components:
           - integer
           - 'null'
           description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
+    CapacityQuote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        asset:
+          $ref: '#/components/schemas/CapacityOffer'
+        task:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        amountCents:
+          type: integer
+        depositCents:
+          type: integer
+        platformFeeCents:
+          type: integer
+        ownerPayoutCents:
+          type: integer
+        formattedAmount:
+          type: string
+        currencyCode:
+          type: string
+        paymentRail:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    PeeringExchange:
+      type: object
+      properties:
+        status:
+          type: string
+        connectionMode:
+          type: string
+        providerReady:
+          type: boolean
+        buyerConfirmed:
+          type: boolean
+        buyerPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerSshPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerEndpoint:
+          type:
+          - string
+          - 'null'
+        buyerAllowedIps:
+          type:
+          - string
+          - 'null'
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
+        providerEndpointHost:
+          type:
+          - string
+          - 'null'
+        providerEndpointPort:
+          type:
+          - integer
+          - 'null'
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerSetupSteps:
+          type: array
+          items:
+            type: string
+        buyerSetupSteps:
+          type: array
+          items:
+            type: string
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
     CapacitySession:
       type: object
       properties:

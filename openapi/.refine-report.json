@@ -15,9 +15,7 @@
     "aureliusagent-dev-machine-payments-api-openapi.yml",
     "aureliusagent-dev-openmodel-pricing-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 2 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -36,11 +34,17 @@
     "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: declared missing tag: Capacity",
     "aureliusagent-dev-walton-capacity-mpp-api-openapi.json: declared missing tag: Mpp",
     "aureliusagent-dev-wundership-mpp-api-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "superseded outputs removed: aureliusagent-dev-walton-capacity-mpp-api-openapi.yml, aureliusagent-dev-wundership-mpp-api-openapi.yml",
-    "apis.yml register: written (+9 apis, 10 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
-    "aureliusagent-dev-walton-capacity-mpp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "aureliusagent-dev-wundership-mpp-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "aureliusagent-dev-ai-generation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-app-planning-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-builderstudio-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-capacity-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-commerce-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-inference-gateway-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-machine-payments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-mpp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "aureliusagent-dev-openmodel-pricing-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

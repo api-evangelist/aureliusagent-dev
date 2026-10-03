@@ -357,6 +357,16 @@ paths:
       x-operation-id-original: postOpenmodelPricingEstimate
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        fallback:
+          type: string
+      additionalProperties: true
     PaymentRequired:
       type: object
       required:
@@ -396,16 +406,6 @@ components:
           type: object
         requestId:
           type: string
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-        fallback:
-          type: string
-      additionalProperties: true
   securitySchemes:
     mppPayment:
       description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
