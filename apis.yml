@@ -342,6 +342,8 @@ apis:
   humanURL: https://aureliusagent.dev/
   baseURL: https://rpc.aureliusagent.dev/a2a
   tags:
+  - MPP
+  tags_raw:
   - Mpp
   properties:
   - type: OpenAPI
@@ -414,6 +416,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/aureliusagent-dev-capability-edges.yml
+  name: WunderCorp Business Capability Map
 - type: DomainSecurity
   url: security/aureliusagent-dev-domain-security.yml
 - type: Website
