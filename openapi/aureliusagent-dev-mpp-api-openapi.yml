@@ -212,196 +212,57 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    CapacityQuoteRequest:
+    CapacitySession:
       type: object
-      required:
-      - assetId
-      - task
-      - startAt
-      - endAt
       properties:
-        assetId:
+        id:
           type: string
           format: uuid
+        status:
+          type: string
+        statusLabel:
+          type: string
+        asset:
+          $ref: '#/components/schemas/CapacityOffer'
         task:
           type: string
-        startAt:
+        amountCents:
+          type: integer
+        formattedAmount:
           type: string
-          format: date-time
-        endAt:
+        paymentRail:
           type: string
-          format: date-time
-        requestedGpuCount:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedVramGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-        requestedCpuCores:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedMemoryGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedStorageGb:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-        requestedUnits:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-          description: Usage units for hosted inference, seats for a workspace, or job units for a supervised resource.
-    CapacitySessionRequest:
-      type: object
-      required:
-      - quoteId
-      - renterName
-      - renterPhone
-      - idempotencyKey
-      properties:
-        quoteId:
+        paymentReceipt:
           type: string
-          format: uuid
-        renterName:
-          type: string
-        renterPhone:
-          type: string
-        instructions:
+        accessToken:
           type:
           - string
           - 'null'
-        callbackUrl:
+        handoffUrl:
           type:
           - string
           - 'null'
-          format: uri
-        idempotencyKey:
-          type: string
-        workloadName:
+        resourceAccess:
           type:
-          - string
+          - object
           - 'null'
-          description: Optional buyer-facing name for the capacity session.
-        containerImage:
+          additionalProperties: true
+        gpuAccess:
           type:
-          - string
+          - object
           - 'null'
-          description: Optional workload or environment hint for the provider. Walton does not provision it.
-        startupCommand:
-          type:
-          - string
-          - 'null'
-          description: Optional provider hint. Walton does not execute commands on the provider resource.
-        exposedPorts:
-          type:
-          - array
-          - 'null'
+          additionalProperties: true
+        events:
+          type: array
           items:
-            type: integer
-          description: Optional service-port hints for the provider to consider when opening the session-scoped peer.
-        clientWireGuardPublicKey:
-          type:
-          - string
-          - 'null'
-        clientSshPublicKey:
-          type:
-          - string
-          - 'null'
-        material:
-          type:
-          - string
-          - 'null'
-        artifactUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-        connectionMode:
-          type:
-          - string
-          - 'null'
-          enum:
-          - WIREGUARD
-          - SSH
-          - TAILSCALE
-          - HTTPS_API
-          - MANUAL
-          - null
-        buyerPublicKey:
-          type:
-          - string
-          - 'null'
-          description: Buyer WireGuard public key. Never submit the private key.
-        buyerSshPublicKey:
-          type:
-          - string
-          - 'null'
-          description: Buyer SSH public key.
-        buyerEndpoint:
-          type:
-          - string
-          - 'null'
-        buyerAllowedIps:
-          type:
-          - string
-          - 'null'
-        buyerIdentity:
-          type:
-          - string
-          - 'null'
-          description: Tailscale identity or another provider-approved identity.
-        buyerNetworkNotes:
-          type:
-          - string
-          - 'null'
-    BuyerPeeringProfile:
-      type: object
-      required:
-      - connectionMode
-      properties:
-        connectionMode:
-          type: string
-          enum:
-          - WIREGUARD
-          - SSH
-          - TAILSCALE
-          - HTTPS_API
-          - MANUAL
-        buyerPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerSshPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerEndpoint:
-          type:
-          - string
-          - 'null'
-        buyerAllowedIps:
-          type:
-          - string
-          - 'null'
-        buyerIdentity:
-          type:
-          - string
-          - 'null'
-        buyerNetworkNotes:
-          type:
-          - string
-          - 'null'
+            type: object
+            additionalProperties: true
+        cancellable:
+          type: boolean
+        peering:
+          oneOf:
+          - $ref: '#/components/schemas/PeeringExchange'
+          - type: 'null'
     CapacityOffer:
       type: object
       required:
@@ -539,14 +400,17 @@ components:
           - integer
           - 'null'
           description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
-    CapacityQuote:
+    CapacityQuoteRequest:
       type: object
+      required:
+      - assetId
+      - task
+      - startAt
+      - endAt
       properties:
-        id:
+        assetId:
           type: string
           format: uuid
-        asset:
-          $ref: '#/components/schemas/CapacityOffer'
         task:
           type: string
         startAt:
@@ -555,23 +419,37 @@ components:
         endAt:
           type: string
           format: date-time
-        amountCents:
-          type: integer
-        depositCents:
-          type: integer
-        platformFeeCents:
-          type: integer
-        ownerPayoutCents:
-          type: integer
-        formattedAmount:
-          type: string
-        currencyCode:
-          type: string
-        paymentRail:
-          type: string
-        expiresAt:
-          type: string
-          format: date-time
+        requestedGpuCount:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedVramGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+        requestedCpuCores:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedMemoryGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedStorageGb:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+        requestedUnits:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          description: Usage units for hosted inference, seats for a workspace, or job units for a supervised resource.
     PeeringExchange:
       type: object
       properties:
@@ -655,57 +533,179 @@ components:
           type: array
           items:
             type: string
-    CapacitySession:
+    CapacitySessionRequest:
+      type: object
+      required:
+      - quoteId
+      - renterName
+      - renterPhone
+      - idempotencyKey
+      properties:
+        quoteId:
+          type: string
+          format: uuid
+        renterName:
+          type: string
+        renterPhone:
+          type: string
+        instructions:
+          type:
+          - string
+          - 'null'
+        callbackUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        idempotencyKey:
+          type: string
+        workloadName:
+          type:
+          - string
+          - 'null'
+          description: Optional buyer-facing name for the capacity session.
+        containerImage:
+          type:
+          - string
+          - 'null'
+          description: Optional workload or environment hint for the provider. Walton does not provision it.
+        startupCommand:
+          type:
+          - string
+          - 'null'
+          description: Optional provider hint. Walton does not execute commands on the provider resource.
+        exposedPorts:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+          description: Optional service-port hints for the provider to consider when opening the session-scoped peer.
+        clientWireGuardPublicKey:
+          type:
+          - string
+          - 'null'
+        clientSshPublicKey:
+          type:
+          - string
+          - 'null'
+        material:
+          type:
+          - string
+          - 'null'
+        artifactUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        connectionMode:
+          type:
+          - string
+          - 'null'
+          enum:
+          - WIREGUARD
+          - SSH
+          - TAILSCALE
+          - HTTPS_API
+          - MANUAL
+          - null
+        buyerPublicKey:
+          type:
+          - string
+          - 'null'
+          description: Buyer WireGuard public key. Never submit the private key.
+        buyerSshPublicKey:
+          type:
+          - string
+          - 'null'
+          description: Buyer SSH public key.
+        buyerEndpoint:
+          type:
+          - string
+          - 'null'
+        buyerAllowedIps:
+          type:
+          - string
+          - 'null'
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+          description: Tailscale identity or another provider-approved identity.
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
+    CapacityQuote:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        status:
-          type: string
-        statusLabel:
-          type: string
         asset:
           $ref: '#/components/schemas/CapacityOffer'
         task:
           type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
         amountCents:
+          type: integer
+        depositCents:
+          type: integer
+        platformFeeCents:
+          type: integer
+        ownerPayoutCents:
           type: integer
         formattedAmount:
           type: string
+        currencyCode:
+          type: string
         paymentRail:
           type: string
-        paymentReceipt:
+        expiresAt:
           type: string
-        accessToken:
+          format: date-time
+    BuyerPeeringProfile:
+      type: object
+      required:
+      - connectionMode
+      properties:
+        connectionMode:
+          type: string
+          enum:
+          - WIREGUARD
+          - SSH
+          - TAILSCALE
+          - HTTPS_API
+          - MANUAL
+        buyerPublicKey:
           type:
           - string
           - 'null'
-        handoffUrl:
+        buyerSshPublicKey:
           type:
           - string
           - 'null'
-        resourceAccess:
+        buyerEndpoint:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: true
-        gpuAccess:
+        buyerAllowedIps:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: true
-        events:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        cancellable:
-          type: boolean
-        peering:
-          oneOf:
-          - $ref: '#/components/schemas/PeeringExchange'
-          - type: 'null'
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
   securitySchemes:
     bearerAuth:
       type: http

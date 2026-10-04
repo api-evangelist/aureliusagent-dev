@@ -58,62 +58,57 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ProviderPeeringOffer:
+    CapacitySession:
       type: object
-      required:
-      - connectionMode
       properties:
-        connectionMode:
+        id:
           type: string
-          enum:
-          - WIREGUARD
-          - SSH
-          - TAILSCALE
-          - HTTPS_API
-          - MANUAL
-        endpointHost:
+          format: uuid
+        status:
+          type: string
+        statusLabel:
+          type: string
+        asset:
+          $ref: '#/components/schemas/CapacityOffer'
+        task:
+          type: string
+        amountCents:
+          type: integer
+        formattedAmount:
+          type: string
+        paymentRail:
+          type: string
+        paymentReceipt:
+          type: string
+        accessToken:
           type:
           - string
           - 'null'
-        endpointPort:
-          type:
-          - integer
-          - 'null'
-          minimum: 1
-          maximum: 65535
-        providerPublicKey:
+        handoffUrl:
           type:
           - string
           - 'null'
-        providerAllowedIps:
+        resourceAccess:
           type:
-          - string
+          - object
           - 'null'
-        sshUsername:
+          additionalProperties: true
+        gpuAccess:
           type:
-          - string
+          - object
           - 'null'
-        serviceUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-        accessCode:
-          type:
-          - string
-          - 'null'
-        providerInstructions:
-          type:
-          - string
-          - 'null'
-        configurationSnippet:
-          type:
-          - string
-          - 'null'
-        providerCompletedSteps:
+          additionalProperties: true
+        events:
           type: array
           items:
-            type: string
+            type: object
+            additionalProperties: true
+        cancellable:
+          type: boolean
+        peering:
+          oneOf:
+          - $ref: '#/components/schemas/PeeringExchange'
+          - type: 'null'
     CapacityOffer:
       type: object
       required:
@@ -251,6 +246,145 @@ components:
           - integer
           - 'null'
           description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
+    ProviderPeeringOffer:
+      type: object
+      required:
+      - connectionMode
+      properties:
+        connectionMode:
+          type: string
+          enum:
+          - WIREGUARD
+          - SSH
+          - TAILSCALE
+          - HTTPS_API
+          - MANUAL
+        endpointHost:
+          type:
+          - string
+          - 'null'
+        endpointPort:
+          type:
+          - integer
+          - 'null'
+          minimum: 1
+          maximum: 65535
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
+    PeeringExchange:
+      type: object
+      properties:
+        status:
+          type: string
+        connectionMode:
+          type: string
+        providerReady:
+          type: boolean
+        buyerConfirmed:
+          type: boolean
+        buyerPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerSshPublicKey:
+          type:
+          - string
+          - 'null'
+        buyerEndpoint:
+          type:
+          - string
+          - 'null'
+        buyerAllowedIps:
+          type:
+          - string
+          - 'null'
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
+        providerEndpointHost:
+          type:
+          - string
+          - 'null'
+        providerEndpointPort:
+          type:
+          - integer
+          - 'null'
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerSetupSteps:
+          type: array
+          items:
+            type: string
+        buyerSetupSteps:
+          type: array
+          items:
+            type: string
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
     CapacityListingRequest:
       type: object
       required:
@@ -427,140 +561,6 @@ components:
           - integer
           - 'null'
           description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
-    PeeringExchange:
-      type: object
-      properties:
-        status:
-          type: string
-        connectionMode:
-          type: string
-        providerReady:
-          type: boolean
-        buyerConfirmed:
-          type: boolean
-        buyerPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerSshPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerEndpoint:
-          type:
-          - string
-          - 'null'
-        buyerAllowedIps:
-          type:
-          - string
-          - 'null'
-        buyerIdentity:
-          type:
-          - string
-          - 'null'
-        buyerNetworkNotes:
-          type:
-          - string
-          - 'null'
-        providerEndpointHost:
-          type:
-          - string
-          - 'null'
-        providerEndpointPort:
-          type:
-          - integer
-          - 'null'
-        providerPublicKey:
-          type:
-          - string
-          - 'null'
-        providerAllowedIps:
-          type:
-          - string
-          - 'null'
-        sshUsername:
-          type:
-          - string
-          - 'null'
-        serviceUrl:
-          type:
-          - string
-          - 'null'
-        accessCode:
-          type:
-          - string
-          - 'null'
-        providerInstructions:
-          type:
-          - string
-          - 'null'
-        configurationSnippet:
-          type:
-          - string
-          - 'null'
-        providerSetupSteps:
-          type: array
-          items:
-            type: string
-        buyerSetupSteps:
-          type: array
-          items:
-            type: string
-        providerCompletedSteps:
-          type: array
-          items:
-            type: string
-    CapacitySession:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        status:
-          type: string
-        statusLabel:
-          type: string
-        asset:
-          $ref: '#/components/schemas/CapacityOffer'
-        task:
-          type: string
-        amountCents:
-          type: integer
-        formattedAmount:
-          type: string
-        paymentRail:
-          type: string
-        paymentReceipt:
-          type: string
-        accessToken:
-          type:
-          - string
-          - 'null'
-        handoffUrl:
-          type:
-          - string
-          - 'null'
-        resourceAccess:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        gpuAccess:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-        events:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        cancellable:
-          type: boolean
-        peering:
-          oneOf:
-          - $ref: '#/components/schemas/PeeringExchange'
-          - type: 'null'
   securitySchemes:
     bearerAuth:
       type: http
