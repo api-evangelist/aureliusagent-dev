@@ -1,0 +1,12 @@
+{
+ "url": "https://rpc.aureliusagent.dev/openapi.json",
+ "requested_url": "https://rpc.aureliusagent.dev/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 57415,
+ "sha256": "2749c61c32af25ca32d039932e27c7d94b5d0e5ff675f8ed4ee0d1d4062ed4de",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
