@@ -107,3 +107,45 @@ x-evidence:
   - {url: 'https://mpp.openmodel.sh/v1/plan', method: 'POST (unpaid)', status: 402, price_header: 'x-wundership-agent-price: 1.00 USD'}
   - {url: 'https://api.wundership.com/api-keys', status: 403}
   - {url: 'https://wundercorp.co/agents/', status: 200}
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units: []
+  plans:
+  - name: Wundership app plan
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: BuilderStudio preview
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: Image generation
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: Listing from image
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: OpenModel pricing estimate
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - other

@@ -4,7 +4,7 @@ method: generated
 name: Buy a Wundership app plan through an MPP 402 challenge
 description: Discover the paid endpoint, receive the HTTP 402 Machine Payments Protocol challenge, settle it, and retry the identical request to receive a structured software plan (then, optionally, a BuilderStudio preview).
 api: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
-operations: [postWundershipPlan, postBuilderPreview]
+operations: [postMppAureliusPlan, postMppBuilderPreview]
 source: >-
   operationIds verified in openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml; the 402 shape was
   observed live on https://mpp.openmodel.sh/v1/plan on 2026-09-19; prices from

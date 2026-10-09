@@ -4,7 +4,7 @@ method: generated
 name: Call the OpenModel MPP inference gateway
 description: Pick a provider and model from the free discovery routes, send an OpenAI- or Anthropic-shaped request, and let the gateway relay the upstream provider's HTTP 402 challenge and receipt unchanged.
 api: openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml
-operations: [getMppInferenceCapabilities, getMppInferenceProviders, getMppInferenceModels, postMppChatCompletions, postMppMessages, relayMppProviderRequest]
+operations: [getMppInferenceCapabilities, getMppInferenceProviders, getMppInferenceModels, postMppChatCompletions, postMppMessages, getProvidersByProviderByUpstreamPath]
 source: >-
   operationIds verified in openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml; GET /v1/capabilities,
   /v1/providers and /v1/models fetched live on 2026-09-19; unpaid POST /v1/chat/completions observed to
