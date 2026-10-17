@@ -58,57 +58,89 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    CapacitySession:
+    PeeringExchange:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         status:
           type: string
-        statusLabel:
+        connectionMode:
           type: string
-        asset:
-          $ref: '#/components/schemas/CapacityOffer'
-        task:
-          type: string
-        amountCents:
-          type: integer
-        formattedAmount:
-          type: string
-        paymentRail:
-          type: string
-        paymentReceipt:
-          type: string
-        accessToken:
+        providerReady:
+          type: boolean
+        buyerConfirmed:
+          type: boolean
+        buyerPublicKey:
           type:
           - string
           - 'null'
-        handoffUrl:
+        buyerSshPublicKey:
           type:
           - string
           - 'null'
-        resourceAccess:
+        buyerEndpoint:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: true
-        gpuAccess:
+        buyerAllowedIps:
           type:
-          - object
+          - string
           - 'null'
-          additionalProperties: true
-        events:
+        buyerIdentity:
+          type:
+          - string
+          - 'null'
+        buyerNetworkNotes:
+          type:
+          - string
+          - 'null'
+        providerEndpointHost:
+          type:
+          - string
+          - 'null'
+        providerEndpointPort:
+          type:
+          - integer
+          - 'null'
+        providerPublicKey:
+          type:
+          - string
+          - 'null'
+        providerAllowedIps:
+          type:
+          - string
+          - 'null'
+        sshUsername:
+          type:
+          - string
+          - 'null'
+        serviceUrl:
+          type:
+          - string
+          - 'null'
+        accessCode:
+          type:
+          - string
+          - 'null'
+        providerInstructions:
+          type:
+          - string
+          - 'null'
+        configurationSnippet:
+          type:
+          - string
+          - 'null'
+        providerSetupSteps:
           type: array
           items:
-            type: object
-            additionalProperties: true
-        cancellable:
-          type: boolean
-        peering:
-          oneOf:
-          - $ref: '#/components/schemas/PeeringExchange'
-          - type: 'null'
+            type: string
+        buyerSetupSteps:
+          type: array
+          items:
+            type: string
+        providerCompletedSteps:
+          type: array
+          items:
+            type: string
     CapacityOffer:
       type: object
       required:
@@ -302,89 +334,6 @@ components:
           type: array
           items:
             type: string
-    PeeringExchange:
-      type: object
-      properties:
-        status:
-          type: string
-        connectionMode:
-          type: string
-        providerReady:
-          type: boolean
-        buyerConfirmed:
-          type: boolean
-        buyerPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerSshPublicKey:
-          type:
-          - string
-          - 'null'
-        buyerEndpoint:
-          type:
-          - string
-          - 'null'
-        buyerAllowedIps:
-          type:
-          - string
-          - 'null'
-        buyerIdentity:
-          type:
-          - string
-          - 'null'
-        buyerNetworkNotes:
-          type:
-          - string
-          - 'null'
-        providerEndpointHost:
-          type:
-          - string
-          - 'null'
-        providerEndpointPort:
-          type:
-          - integer
-          - 'null'
-        providerPublicKey:
-          type:
-          - string
-          - 'null'
-        providerAllowedIps:
-          type:
-          - string
-          - 'null'
-        sshUsername:
-          type:
-          - string
-          - 'null'
-        serviceUrl:
-          type:
-          - string
-          - 'null'
-        accessCode:
-          type:
-          - string
-          - 'null'
-        providerInstructions:
-          type:
-          - string
-          - 'null'
-        configurationSnippet:
-          type:
-          - string
-          - 'null'
-        providerSetupSteps:
-          type: array
-          items:
-            type: string
-        buyerSetupSteps:
-          type: array
-          items:
-            type: string
-        providerCompletedSteps:
-          type: array
-          items:
-            type: string
     CapacityListingRequest:
       type: object
       required:
@@ -561,6 +510,57 @@ components:
           - integer
           - 'null'
           description: Concurrent requests for MODEL_INFERENCE or bookable seats for SHARED_WORKSPACE.
+    CapacitySession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        statusLabel:
+          type: string
+        asset:
+          $ref: '#/components/schemas/CapacityOffer'
+        task:
+          type: string
+        amountCents:
+          type: integer
+        formattedAmount:
+          type: string
+        paymentRail:
+          type: string
+        paymentReceipt:
+          type: string
+        accessToken:
+          type:
+          - string
+          - 'null'
+        handoffUrl:
+          type:
+          - string
+          - 'null'
+        resourceAccess:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        gpuAccess:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        events:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        cancellable:
+          type: boolean
+        peering:
+          oneOf:
+          - $ref: '#/components/schemas/PeeringExchange'
+          - type: 'null'
   securitySchemes:
     bearerAuth:
       type: http
