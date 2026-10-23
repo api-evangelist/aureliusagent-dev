@@ -15,6 +15,9 @@ artifacts:
   authentication/aureliusagent-dev-authentication.yml:
     method: searched
     evidence: declared in the artifact
+  capabilities/aureliusagent-dev-capability-edges.yml:
+    method: unknown
+    evidence: no authorship recorded
   changelog/aureliusagent-dev-changelog.yml:
     method: unknown
     evidence: no authorship recorded
@@ -36,7 +39,13 @@ artifacts:
   front-door-ai/2026-09-17.yml:
     method: unknown
     evidence: no authorship recorded
-  kin/checks-2026-09-24T161608.yml:
+  integrations/_index.yml:
+    method: generated
+    evidence: carries an API Evangelist house phrase
+  integrations/aureliusagent-dev-integration-edges.yml:
+    method: unknown
+    evidence: no authorship recorded
+  kin/checks-2026-10-11T110117.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-19T193153.yml:
@@ -69,6 +78,21 @@ artifacts:
   kin/score-2026-09-24T161608.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T210408.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T232841.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T000835.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T024842.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-11T110117.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   lifecycle/aureliusagent-dev-lifecycle.yml:
     method: searched
     evidence: declared in the artifact
@@ -90,20 +114,41 @@ artifacts:
       to the provider's source is unverified
   openapi/_original/aureliusagent-dev-wundership-mpp-api-openapi.json:
     method: harvested
-    evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
-      to the provider's source is unverified
-  openapi/aureliusagent-dev-walton-capacity-mpp-api-openapi.yml:
+    evidence: byte-identical to https://rpc.aureliusagent.dev/openapi.json (sha256 2749c61c32af, fetched
+      2026-10-04)
+  openapi/aureliusagent-dev-ai-generation-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
-  openapi/aureliusagent-dev-wundership-mpp-api-openapi.yml:
+  openapi/aureliusagent-dev-app-planning-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-builderstudio-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-capacity-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-commerce-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-inference-gateway-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-machine-payments-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-mpp-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/aureliusagent-dev-openmodel-pricing-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   overlays/aureliusagent-dev-walton-capacity-mpp-api-overlay.yaml:
-    method: generated
-    evidence: declared in the artifact
+    method: derived
+    evidence: an API Evangelist overlay (title) over the provider's contract
   overlays/aureliusagent-dev-wundership-mpp-api-overlay.yaml:
-    method: generated
-    evidence: declared in the artifact
+    method: derived
+    evidence: an API Evangelist overlay (title) over the provider's contract
   packages/aureliusagent-dev-packages.yml:
     method: searched
     evidence: declared in the artifact

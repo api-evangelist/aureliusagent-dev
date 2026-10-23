@@ -502,3 +502,9 @@ components:
       description: MPP payment authorization returned after satisfying the HTTP 402 challenge.
       scheme: Payment
       type: http
+x-provenance:
+  method: harvested
+  publisher: WunderCorp
+  source: https://rpc.aureliusagent.dev/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
